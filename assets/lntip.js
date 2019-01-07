@@ -1,25 +1,25 @@
 /*! https://github.com/robiveli/jpopup */
 !function(e,n){void 0===e&&void 0!==window&&(e=window),"function"==typeof define&&define.amd?define([],function(){return e.jPopup=n()}):"object"==typeof module&&module.exports?module.exports=n():e.jPopup=n()}(this,function(){"use strict";var n,o,t=function(){var e=0<arguments.length&&void 0!==arguments[0]?arguments[0]:"";1==(n=0!=e.shouldSetHash)&&(o=void 0!==e.hashtagValue?e.hashtagValue:"#popup"),i(e.content).then(a).then(1==n&&s(!0))},i=function(e){return u.classList.add("jPopupOpen"),Promise.resolve(document.body.insertAdjacentHTML("beforeend",'<div class="jPopup">\n                <button type="button" class="jCloseBtn">\n                    <div class="graphicIcon"></div>\n                </button>\n                <div class="content">'.concat(e,"</div>\n            </div>")))},s=function(e){1==e?window.location.hash=o:window.history.back()},d=function(e){27==e.keyCode&&t.prototype.close(!0)},c=function(){window.location.hash!==o&&t.prototype.close(!1)},a=function(){document.getElementsByClassName("jCloseBtn")[0].addEventListener("click",function(){t.prototype.close(!0)}),window.addEventListener("keydown",d),1==n&&window.addEventListener("hashchange",c)},u=document.querySelector("html");return t.prototype={close:function(e){u.classList.add("jPopupClosed"),1==n&&(e&&s(!1),window.removeEventListener("hashchange",c)),window.removeEventListener("keydown",d),document.getElementsByClassName("jPopup")[0].addEventListener("animationend",function(e){e.target.parentNode.removeChild(this),u.classList.remove("jPopupClosed"),u.classList.remove("jPopupOpen")})},open:function(e){t(e)}},t});
 
-if (document.currentScript) {
-  window.LNTIP_HOST = document.currentScript.getAttribute('lntip-host');
-}
-
-LnTip = function (amount, memo, host) {
-  this.host = host || window.LNTIP_HOST;
-  this.amount = amount;
-  this.memo = memo || '';
+LnTip = function (options) {
+  var host = document.getElementById('lntip-script').getAttribute('lntip-host');
+  this.host = options.host || host;
+  this.amount = options.amount;
+  this.memo = options.memo || '';
   this.getInvoice();
 }
 
 LnTip.prototype.loadStylesheet = function () {
   if (document.getElementById('lntip-style')) { return; }
+  // get the CSS file from the same source as the JS widget file
+  var script = document.getElementById('lntip-script');
+  var source = script.src.replace(/\.js$/, ".css");
   var head = document.getElementsByTagName('head')[0];
   var css = document.createElement('link');
   css.id = "lntip-style";
   css.rel = "stylesheet";
   css.type = "text/css";
-  css.href = `${this.host}/static/lntip.css`;
+  css.href = source
   head.appendChild(css);
 }
 
@@ -41,7 +41,6 @@ LnTip.prototype.openPopup = function (content) {
 }
 
 LnTip.prototype.thanks = function () {
-  if (window.lntipPopup) { window.lntipPopup.close(); window.lntipPopup = null; }
   var content = '<div class="lntip-payment-request"><h1 class="lntip-headline">Thank you!</h1></div>';
   this.openPopup(content);
   setTimeout(() => {
@@ -60,7 +59,7 @@ LnTip.prototype.watchPayment = function () {
           this.stopWatchingPayment();
         }
       })
-  }, 1000);
+  }, 2000);
 }
 
 LnTip.prototype.stopWatchingPayment = function () {
@@ -98,8 +97,8 @@ LnTip.prototype.requestPayment = function () {
   </div>`
   this.openPopup(content);
 
-  document.getElementById('lntip-copy').onclick = function() {
-    navigator.clipboard.writeText(invoice.PaymentRequest);
+  document.getElementById('lntip-copy').onclick = () => {
+    navigator.clipboard.writeText(this.invoice.PaymentRequest);
     alert('Copied to clipboad');
   }
   return Promise.resolve();

@@ -19,8 +19,8 @@ type Invoice struct {
 
 func main() {
 	address := flag.String("address", "localhost:10009", "The host and port of the ln gRPC server")
-	certFile := flag.String("cert", "tls.cert", "Path to the lnd tls.cert file")
-	macaroonFile := flag.String("macaroon", "invoice.macaroon", "Path to the lnd macaroon file")
+	certFile := flag.String("cert", "~/.lnd/tls.cert", "Path to the lnd tls.cert file")
+	macaroonFile := flag.String("macaroon", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the lnd macaroon file")
 	bind := flag.String("bind", ":1323", "Host and port to bind on")
 
 	flag.Parse()
