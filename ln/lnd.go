@@ -18,6 +18,7 @@ import (
 
 var stdOutLogger = log.New(os.Stdout, "", log.LstdFlags)
 
+// thanks https://github.com/philippgille/ln-paywall/
 // Invoice is a Lightning Network invoice and contains the typical invoice string and the payment hash.
 type Invoice struct {
 	ImplDepID string
@@ -40,7 +41,7 @@ func (c LNDclient) GenerateInvoice(amount int64, memo string) (Invoice, error) {
 		Memo:  memo,
 		Value: amount,
 	}
-	stdOutLogger.Println("Creating invoice for a new API request")
+  stdOutLogger.Printf("Creating invoice: %s", memo)
 	res, err := c.lndClient.AddInvoice(c.ctx, &invoice)
 	if err != nil {
 		return result, err
@@ -62,7 +63,7 @@ func (c LNDclient) CheckInvoice(id string) (bool, error) {
 		return false, err
 	}
 
-	stdOutLogger.Printf("Checking invoice for hash %v\n", id)
+	stdOutLogger.Printf("Lookup invoice with hash %v\n", id)
 
 	// Get the invoice for that hash
 	paymentHash := lnrpc.PaymentHash{
@@ -82,19 +83,9 @@ func (c LNDclient) CheckInvoice(id string) (bool, error) {
 	return true, nil
 }
 
-func (c LNDclient) GetURIs() (bool, error) {
-  req := &lnrpc.GetInfoRequest{}
-  info, err := c.lndClient.GetInfo(c.ctx, req)
-	stdOutLogger.Println(info.Uris)
-  return true, err
-}
-
-
-// NewLNDclient creates a new LNDclient instance.
 func NewLNDclient(lndOptions LNDoptions) (LNDclient, error) {
 	result := LNDclient{}
 
-	// Set up a connection to the server.
 	creds, err := credentials.NewClientTLSFromFile(lndOptions.CertFile, "")
 	if err != nil {
 		return result, err

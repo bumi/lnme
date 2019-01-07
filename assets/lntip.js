@@ -13,14 +13,14 @@ LnTip = function (amount, memo, host) {
 }
 
 LnTip.prototype.loadStylesheet = function () {
-  if (this.styleLoaded) { return }
+  if (document.getElementById('lntip-style')) { return; }
   var head = document.getElementsByTagName('head')[0];
   var css = document.createElement('link');
+  css.id = "lntip-style";
   css.rel = "stylesheet";
   css.type = "text/css";
   css.href = `${this.host}/static/lntip.css`;
   head.appendChild(css);
-  this.styleLoaded = true;
 }
 
 LnTip.prototype.closePopup = function () {
@@ -31,8 +31,8 @@ LnTip.prototype.closePopup = function () {
 }
 
 LnTip.prototype.openPopup = function (content) {
-  this.closePopup();
   this.loadStylesheet();
+  this.closePopup();
   this.popup = new jPopup({
     content: content,
     shouldSetHash: false
@@ -69,14 +69,18 @@ LnTip.prototype.stopWatchingPayment = function () {
 }
 
 LnTip.prototype.payWithWebln = function () {
+  console.log(this.invoice)
   if (!webln.isEnabled) {
 	  webln.enable().then((weblnResponse) => {
-      return webln.sendPayment({ paymentRequest: invoice.PaymentRequest })
+      console.log(this.invoice.PaymentRequest)
+      return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
     }).catch((e) => {
+      console.log(e);
       this.requestPayment();
     })
   } else {
-    return webln.sendPayment({ paymentRequest: invoice.PaymentRequest })
+    console.log(this.invoice.PaymentRequest)
+    return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
   }
 }
 
