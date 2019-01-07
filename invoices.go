@@ -8,15 +8,20 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 var stdOutLogger = log.New(os.Stdout, "", log.LstdFlags)
+
+type Invoice struct {
+	Amount int64  `json:"amount"`
+	Memo   string `json:"memo"`
+}
 
 func main() {
 	address := flag.String("address", "localhost:10009", "The host and port of the ln gRPC server")
 	certFile := flag.String("cert", "tls.cert", "Path to the lnd tls.cert file")
 	macaroonFile := flag.String("macaroon", "invoice.macaroon", "Path to the lnd macaroon file")
+	bind := flag.String("bind", ":1323", "Host and port to bind on")
 
 	flag.Parse()
 
@@ -25,7 +30,7 @@ func main() {
 	e.Use(middleware.CORS())
 	e.Use(middleware.Recover())
 
-  lndOptions := ln.LNDoptions{
+	lndOptions := ln.LNDoptions{
 		Address:      *address,
 		CertFile:     *certFile,
 		MacaroonFile: *macaroonFile,
@@ -35,12 +40,15 @@ func main() {
 		panic(err)
 	}
 
-	e.GET("/payme", func(c echo.Context) error {
-		memo := c.FormValue("memo")
-		amount, _ := strconv.ParseInt(c.FormValue("amount"), 10, 64)
-		invoice, err := lnClient.GenerateInvoice(amount, memo)
+	e.POST("/invoice", func(c echo.Context) error {
+		i := new(Invoice)
+		if err := c.Bind(i); err != nil {
+			return c.JSON(http.StatusBadRequest, "bad request")
+		}
+
+		invoice, err := lnClient.GenerateInvoice(i.Amount, i.Memo)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, "error")
+			return c.JSON(http.StatusInternalServerError, "invoice creation error")
 		}
 
 		return c.JSON(http.StatusOK, invoice)
@@ -52,5 +60,5 @@ func main() {
 		return c.JSON(http.StatusOK, invoice)
 	})
 
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(*bind))
 }

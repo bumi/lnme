@@ -69,17 +69,13 @@ LnTip.prototype.stopWatchingPayment = function () {
 }
 
 LnTip.prototype.payWithWebln = function () {
-  console.log(this.invoice)
   if (!webln.isEnabled) {
 	  webln.enable().then((weblnResponse) => {
-      console.log(this.invoice.PaymentRequest)
       return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
     }).catch((e) => {
-      console.log(e);
       this.requestPayment();
     })
   } else {
-    console.log(this.invoice.PaymentRequest)
     return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
   }
 }
@@ -110,8 +106,16 @@ LnTip.prototype.requestPayment = function () {
 }
 
 LnTip.prototype.getInvoice = function () {
-  return this._request(`${this.host}/payme?memo=${this.memo}&amount=${this.amount}`)
-    .then((invoice) => {
+  var args = {
+    method: 'POST',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ memo: this.memo, amount: this.amount })
+  };
+  return this._request(
+      `${this.host}/invoice`,
+      args
+    ).then((invoice) => {
       this.invoice = invoice;
       this.watchPayment();
 
@@ -123,8 +127,8 @@ LnTip.prototype.getInvoice = function () {
     })
 }
 
-LnTip.prototype._request = function(url) {
-  return fetch(url).then((response) => {
+LnTip.prototype._request = function(url, args) {
+  return fetch(url, args).then((response) => {
     return response.json();
   })
 }

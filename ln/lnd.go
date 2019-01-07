@@ -36,12 +36,11 @@ type LNDclient struct {
 func (c LNDclient) GenerateInvoice(amount int64, memo string) (Invoice, error) {
 	result := Invoice{}
 
-	// Create the request and send it
+  stdOutLogger.Printf("Creating invoice: memo=%s amount=%v ", memo, amount)
 	invoice := lnrpc.Invoice{
 		Memo:  memo,
 		Value: amount,
 	}
-  stdOutLogger.Printf("Creating invoice: %s", memo)
 	res, err := c.lndClient.AddInvoice(c.ctx, &invoice)
 	if err != nil {
 		return result, err
@@ -63,7 +62,7 @@ func (c LNDclient) CheckInvoice(id string) (bool, error) {
 		return false, err
 	}
 
-	stdOutLogger.Printf("Lookup invoice with hash %v\n", id)
+  stdOutLogger.Printf("Lookup invoice: hash=%s\n", id)
 
 	// Get the invoice for that hash
 	paymentHash := lnrpc.PaymentHash{
