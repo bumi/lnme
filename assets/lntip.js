@@ -6,6 +6,7 @@ LnTip = function (options) {
   this.host = options.host || host;
   this.amount = options.amount;
   this.memo = options.memo || '';
+  this.loadStylesheet();
   this.getInvoice();
 }
 
@@ -31,7 +32,6 @@ LnTip.prototype.closePopup = function () {
 }
 
 LnTip.prototype.openPopup = function (content) {
-  this.loadStylesheet();
   this.closePopup();
   this.popup = new jPopup({
     content: content,
