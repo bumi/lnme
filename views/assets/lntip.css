@@ -1,0 +1,24 @@
+@keyframes slideIn{0%{opacity:0;transform:scale(.85)}70%{opacity:1;transform:scale(1.03)}100%{transform:scale(1)}}@keyframes slideOut{from{opacity:1}to{opacity:0}}@keyframes rotate{from{transform:rotate(0)}to{transform:rotate(180deg)}}.jPopup{position:absolute;top:0;right:0;bottom:0;left:0;z-index:9999;max-width:100%;padding:50px 15px 15px;box-sizing:border-box}.jPopup:after{content:'';position:fixed;top:0;right:0;bottom:0;left:0;z-index:9998;background:#fff}.jPopup>.jCloseBtn{position:absolute;right:1rem;top:1rem;z-index:9999;outline:0;border:0;box-sizing:border-box;cursor:pointer;width:5rem;height:5rem;background:#f2f2f2;border-radius:50%}.jPopup>.jCloseBtn>.graphicIcon{width:2rem;height:2rem;position:relative;margin:0 auto}.jPopup>.jCloseBtn>.graphicIcon:after,.jPopup>.jCloseBtn>.graphicIcon:before{position:absolute;left:.9rem;content:'';height:2rem;width:.3rem;background-color:#adadad;border-radius:.5rem}.jPopup>.jCloseBtn>.graphicIcon:before{-ms-transform:rotate(45deg);transform:rotate(45deg)}.jPopup>.jCloseBtn>.graphicIcon:after{-ms-transform:rotate(-45deg);transform:rotate(-45deg)}.jPopup>.jCloseBtn:hover>.graphicIcon{animation:rotate 250ms ease-in}.jPopup>.jCloseBtn:active{-ms-transform:scale(.95);transform:scale(.95)}.jPopup>.content{top:50%;left:1.5rem;right:1.5rem;position:absolute;z-index:9999;-ms-transform:translateY(-50%);transform:translateY(-50%)}@media screen and (min-width:680px){.jPopup{padding:8rem 3rem 3rem}.jPopup>.jCloseBtn{width:6rem;height:6rem;right:2rem;top:2rem}.jPopup>.jCloseBtn:after{content:'(esc)';position:absolute;top:6.5rem;left:50%;font-size:1.1rem;-ms-transform:translateX(-50%);transform:translateX(-50%);color:#adadad;pointer-events:none}.jPopup>.jCloseBtn>.graphicIcon{width:3rem;height:3rem}.jPopup>.jCloseBtn>.graphicIcon:after,.jPopup>.jCloseBtn>.graphicIcon:before{left:1.4rem;height:3rem}.jPopup>.content{left:3rem;right:3rem}}.jPopupOpen,.jPopupOpen body{overflow:hidden}.jPopupOpen .jPopup{animation:slideIn .5s cubic-bezier(.34,.34,.26,.99)}.jPopupClosed .jPopup{animation:slideOut 250ms ease-in}
+
+.jPopup > .jCloseBtn {
+  z-index:10000;
+}
+
+.lntip-payment-request {
+  width: 220px;
+  margin: 0 auto;
+  text-align: center;
+}
+.lntip-payment-request h1, .lntip-payment-request h2 {
+  text-align: center;
+}
+
+.lntip-details {
+  width: 200px;
+  overflow: hidden;
+}
+
+.lntip-copy {
+  cursor: pointer;
+  display: inline;
+}
