@@ -3,10 +3,13 @@
 LnTip provides a Bitcoin lightning tipping widget that can easily be integrated into any website.  
 
 It consistes of a small service written in Go that connects to a lnd node and exposes 
-a simple HTTP JSON API to create and monitor invoices. This API is used from a tiny 
-JavaScript widget that integrated in any website. 
+a simple HTTP JSON API to create and monitor invoices. That API is used from a tiny 
+JavaScript widget that integrates in any website. 
 
 See it in action: [moneyz.michaelbumann.com](http://moneyz.michaelbumann.com)
+
+If [webln](https://github.com/wbobeirne/webln) is available it will be used to request the payment; 
+otherwise a overlay will be shown with the payment request and a QR code.
 
 ## Motivation
 
@@ -47,9 +50,18 @@ to the host and port on which your lntip instance is running:
 
 #### Usage
 
+To request a lightning payment simply call `request()` on a `new LnTip({amount: amount, memo: memo})`:
+
 ```js
 new LnTip({ amount: 1000, memo: 'high5' }).request()
 ```
+
+Use it from a plain HTML link:
+```html
+  <a href="#" onclick="javascript:new LnTip({ amount: 1000, memo: 'high5' }).request();return false;">Tip me</a>
+```
+
+##### More advanced JS API:
 
 ```js
 let tip = new LnTip({ amount: 1000, memo: 'high5' });
