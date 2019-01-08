@@ -6,8 +6,7 @@ LnTip = function (options) {
   this.host = options.host || host;
   this.amount = options.amount;
   this.memo = options.memo || '';
-  this.loadStylesheet();
-  this.getInvoice();
+  this.loadStylesheet(); // load it early that styles are ready when the popup is opened
 }
 
 LnTip.prototype.loadStylesheet = function () {
@@ -50,16 +49,19 @@ LnTip.prototype.thanks = function () {
 
 LnTip.prototype.watchPayment = function () {
   if (this.paymentWatcher) { window.clearInterval(this.paymentWatcher) }
-  this.paymentWatcher = window.setInterval(() => {
-    this._request(`${this.host}/settled/${this.invoice.ImplDepID}`)
-      .then((settled) => {
-        if (settled) {
-          this.invoice.settled = true;
-          this.thanks();
-          this.stopWatchingPayment();
-        }
-      })
-  }, 2000);
+
+  return new Promise((resolve, reject) => {
+    this.paymentWatcher = window.setInterval(() => {
+      this._fetch(`${this.host}/settled/${this.invoice.ImplDepID}`)
+        .then((settled) => {
+          if (settled) {
+            this.invoice.settled = true;
+            this.stopWatchingPayment();
+            resolve(this.invoice);
+          }
+        });
+    }, 2000);
+  });
 }
 
 LnTip.prototype.stopWatchingPayment = function () {
@@ -72,14 +74,14 @@ LnTip.prototype.payWithWebln = function () {
 	  webln.enable().then((weblnResponse) => {
       return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
     }).catch((e) => {
-      this.requestPayment();
+      return this.requestPayment();
     })
   } else {
     return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
   }
 }
 
-LnTip.prototype.requestPayment = function () {
+LnTip.prototype.showPaymentRequest = function () {
   var content = `<div class="lntip-payment-request">
     <h1>${this.memo}</h1>
     <h2>${this.amount} satoshi</h2>
@@ -101,7 +103,7 @@ LnTip.prototype.requestPayment = function () {
     navigator.clipboard.writeText(this.invoice.PaymentRequest);
     alert('Copied to clipboad');
   }
-  return Promise.resolve();
+  return Promise.resolve(); // be compatible to payWithWebln()
 }
 
 LnTip.prototype.getInvoice = function () {
@@ -111,22 +113,34 @@ LnTip.prototype.getInvoice = function () {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ memo: this.memo, amount: this.amount })
   };
-  return this._request(
+  return this._fetch(
       `${this.host}/invoice`,
       args
     ).then((invoice) => {
       this.invoice = invoice;
-      this.watchPayment();
-
-      if (typeof webln !== 'undefined') {
-        this.payWithWebln();
-      } else {
-        this.requestPayment();
-      }
+      return invoice;
     })
 }
 
-LnTip.prototype._request = function(url, args) {
+LnTip.prototype.requestPayment = function () {
+  return this.getInvoice().then((invoice) => {
+    if (typeof webln !== 'undefined') {
+      return this.payWithWebln();
+    } else {
+      return this.showPaymentRequest();
+    }
+  });
+}
+
+LnTip.prototype.request = function () {
+  return this.requestPayment().then(() => {
+    this.watchPayment().then((invoice) => {
+      this.thanks();
+    });
+  });
+}
+
+LnTip.prototype._fetch = function(url, args) {
   return fetch(url, args).then((response) => {
     return response.json();
   })
