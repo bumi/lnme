@@ -74,7 +74,7 @@ LnTip.prototype.payWithWebln = function () {
 	  webln.enable().then((weblnResponse) => {
       return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
     }).catch((e) => {
-      return this.requestPayment();
+      return this.showPaymentRequest();
     })
   } else {
     return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
