@@ -9,7 +9,7 @@ JavaScript widget that integrates in any website.
 See it in action: [moneyz.michaelbumann.com](http://moneyz.michaelbumann.com)
 
 If [webln](https://github.com/wbobeirne/webln) is available it will be used to request the payment; 
-otherwise a overlay will be shown with the payment request and a QR code.
+otherwise an overlay will be shown with the payment request and a QR code.
 
 ## Motivation
 
@@ -74,7 +74,7 @@ tip.requestPayment().then((invoice) => {
 
 // create a new invoice
 tip.getInvoice().then((invoice) => {
-  console.log(tip.invoice.PaymentRequest)
+  console.log(invoice.PaymentRequest)
 });
 
 // periodically watch if an invoice is settled
