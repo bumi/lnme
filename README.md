@@ -50,21 +50,21 @@ to the host and port on which your lntip instance is running:
 
 #### Usage
 
-To request a lightning payment simply call `request()` on a `new LnTip({amount: amount, memo: memo})`:
+To request a lightning payment simply call `request()` on a `new LnTip({value: value, memo: memo})`:
 
 ```js
-new LnTip({ amount: 1000, memo: 'high5' }).request()
+new LnTip({ value: 1000, memo: 'high5' }).request()
 ```
 
 Use it from a plain HTML link:
 ```html
-  <a href="#" onclick="javascript:new LnTip({ amount: 1000, memo: 'high5' }).request();return false;">Tip me</a>
+  <a href="#" onclick="javascript:new LnTip({ value: 1000, memo: 'high5' }).request();return false;">Tip me</a>
 ```
 
 ##### More advanced JS API:
 
 ```js
-let tip = new LnTip({ amount: 1000, memo: 'high5' });
+let tip = new LnTip({ value: 1000, memo: 'high5' });
 
 // get a new invoice and watch for a payment
 // promise resolves if the invoice is settled
@@ -73,7 +73,7 @@ tip.requestPayment().then((invoice) => {
 });
 
 // create a new invoice
-tip.getInvoice().then((invoice) => {
+tip.addInvoice().then((invoice) => {
   console.log(invoice.PaymentRequest)
 });
 
@@ -83,6 +83,9 @@ tip.watchPayment().then((invoice) => {
 });
 
 ```
+
+## Development
+
 
 
 ## Contributing

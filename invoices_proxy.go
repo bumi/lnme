@@ -13,7 +13,7 @@ import (
 var stdOutLogger = log.New(os.Stdout, "", log.LstdFlags)
 
 type Invoice struct {
-	Amount int64  `json:"amount"`
+	Value  int64  `json:"value"`
 	Memo   string `json:"memo"`
 }
 
@@ -22,14 +22,21 @@ func main() {
 	certFile := flag.String("cert", "~/.lnd/tls.cert", "Path to the lnd tls.cert file")
 	macaroonFile := flag.String("macaroon", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the lnd macaroon file")
 	bind := flag.String("bind", ":1323", "Host and port to bind on")
+  staticPath := flag.String("static-path", "", "Path to a static assets directory. Blank to disable serving static files")
+  disableCors := flag.Bool("disable-cors", false, "Disable CORS headers")
 
 	flag.Parse()
 
 	e := echo.New()
-	e.Static("/static", "assets")
-	e.Use(middleware.CORS())
+  if (*staticPath != "") {
+	  e.Static("/static", *staticPath)
+  }
+  if (!*disableCors) {
+	  e.Use(middleware.CORS())
+  }
 	e.Use(middleware.Recover())
 
+  stdOutLogger.Printf("Connection to %s using macaroon %s and cert %s", *address, *macaroonFile, *certFile)
 	lndOptions := ln.LNDoptions{
 		Address:      *address,
 		CertFile:     *certFile,
@@ -37,16 +44,18 @@ func main() {
 	}
 	lnClient, err := ln.NewLNDclient(lndOptions)
 	if err != nil {
+    stdOutLogger.Print("Error initializing LND client:")
 		panic(err)
 	}
 
-	e.POST("/invoice", func(c echo.Context) error {
+  // endpoint URLs compatible to the LND REST API
+	e.POST("/v1/invoices", func(c echo.Context) error {
 		i := new(Invoice)
 		if err := c.Bind(i); err != nil {
 			return c.JSON(http.StatusBadRequest, "bad request")
 		}
 
-		invoice, err := lnClient.GenerateInvoice(i.Amount, i.Memo)
+		invoice, err := lnClient.AddInvoice(i.Value, i.Memo)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, "invoice creation error")
 		}
@@ -54,9 +63,9 @@ func main() {
 		return c.JSON(http.StatusOK, invoice)
 	})
 
-	e.GET("/settled/:invoiceId", func(c echo.Context) error {
+	e.GET("/v1/invoice/:invoiceId", func(c echo.Context) error {
 		invoiceId := c.Param("invoiceId")
-		invoice, _ := lnClient.CheckInvoice(invoiceId)
+		invoice, _ := lnClient.GetInvoice(invoiceId)
 		return c.JSON(http.StatusOK, invoice)
 	})
 

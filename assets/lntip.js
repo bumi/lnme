@@ -4,7 +4,7 @@
 LnTip = function (options) {
   var host = document.getElementById('lntip-script').getAttribute('lntip-host');
   this.host = options.host || host;
-  this.amount = options.amount;
+  this.value = options.value;
   this.memo = options.memo || '';
   this.loadStylesheet(); // load it early that styles are ready when the popup is opened
 }
@@ -52,9 +52,9 @@ LnTip.prototype.watchPayment = function () {
 
   return new Promise((resolve, reject) => {
     this.paymentWatcher = window.setInterval(() => {
-      this._fetch(`${this.host}/settled/${this.invoice.ImplDepID}`)
-        .then((settled) => {
-          if (settled) {
+      this._fetch(`${this.host}/v1/invoice/${this.invoice.ImplDepID}`)
+        .then((invoice) => {
+          if (invoice.settled) {
             this.invoice.settled = true;
             this.stopWatchingPayment();
             resolve(this.invoice);
@@ -72,25 +72,25 @@ LnTip.prototype.stopWatchingPayment = function () {
 LnTip.prototype.payWithWebln = function () {
   if (!webln.isEnabled) {
 	  webln.enable().then((weblnResponse) => {
-      return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
+      return webln.sendPayment({ paymentRequest: this.invoice.payment_request })
     }).catch((e) => {
       return this.showPaymentRequest();
     })
   } else {
-    return webln.sendPayment({ paymentRequest: this.invoice.PaymentRequest })
+    return webln.sendPayment({ paymentRequest: this.invoice.payment_request })
   }
 }
 
 LnTip.prototype.showPaymentRequest = function () {
   var content = `<div class="lntip-payment-request">
     <h1>${this.memo}</h1>
-    <h2>${this.amount} satoshi</h2>
+    <h2>${this.value} satoshi</h2>
     <div class="lntip-qr">
-      <img src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${this.invoice.PaymentRequest}">
+      <img src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${this.invoice.payment_request}">
     </div>
     <div class="lntip-details">
-      <a href="lightning:${this.invoice.PaymentRequest}" class="lntip-invoice">
-        ${this.invoice.PaymentRequest}
+      <a href="lightning:${this.invoice.payment_request}" class="lntip-invoice">
+        ${this.invoice.payment_request}
       </a>
       <div class="lntip-copy" id="lntip-copy">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -100,30 +100,30 @@ LnTip.prototype.showPaymentRequest = function () {
   this.openPopup(content);
 
   document.getElementById('lntip-copy').onclick = () => {
-    navigator.clipboard.writeText(this.invoice.PaymentRequest);
+    navigator.clipboard.writeText(this.invoice.payment_request);
     alert('Copied to clipboad');
   }
   return Promise.resolve(); // be compatible to payWithWebln()
 }
 
-LnTip.prototype.getInvoice = function () {
+LnTip.prototype.addInvoice = function () {
   var args = {
     method: 'POST',
     mode: 'cors',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ memo: this.memo, amount: this.amount })
+    body: JSON.stringify({ memo: this.memo, value: this.value })
   };
   return this._fetch(
-      `${this.host}/invoice`,
+      `${this.host}/v1/invoices`,
       args
     ).then((invoice) => {
       this.invoice = invoice;
       return invoice;
-    })
+    });
 }
 
 LnTip.prototype.requestPayment = function () {
-  return this.getInvoice().then((invoice) => {
+  return this.addInvoice().then((invoice) => {
     if (typeof webln !== 'undefined') {
       return this.payWithWebln();
     } else {
@@ -142,6 +142,10 @@ LnTip.prototype.request = function () {
 
 LnTip.prototype._fetch = function(url, args) {
   return fetch(url, args).then((response) => {
-    return response.json();
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error(response);
+    }
   })
 }
