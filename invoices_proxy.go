@@ -13,8 +13,8 @@ import (
 var stdOutLogger = log.New(os.Stdout, "", log.LstdFlags)
 
 type Invoice struct {
-	Value  int64  `json:"value"`
-	Memo   string `json:"memo"`
+	Value int64  `json:"value"`
+	Memo  string `json:"memo"`
 }
 
 func main() {
@@ -22,21 +22,21 @@ func main() {
 	certFile := flag.String("cert", "~/.lnd/tls.cert", "Path to the lnd tls.cert file")
 	macaroonFile := flag.String("macaroon", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the lnd macaroon file")
 	bind := flag.String("bind", ":1323", "Host and port to bind on")
-  staticPath := flag.String("static-path", "", "Path to a static assets directory. Blank to disable serving static files")
-  disableCors := flag.Bool("disable-cors", false, "Disable CORS headers")
+	staticPath := flag.String("static-path", "", "Path to a static assets directory. Blank to disable serving static files")
+	disableCors := flag.Bool("disable-cors", false, "Disable CORS headers")
 
 	flag.Parse()
 
 	e := echo.New()
-  if (*staticPath != "") {
-	  e.Static("/static", *staticPath)
-  }
-  if (!*disableCors) {
-	  e.Use(middleware.CORS())
-  }
+	if *staticPath != "" {
+		e.Static("/static", *staticPath)
+	}
+	if !*disableCors {
+		e.Use(middleware.CORS())
+	}
 	e.Use(middleware.Recover())
 
-  stdOutLogger.Printf("Connection to %s using macaroon %s and cert %s", *address, *macaroonFile, *certFile)
+	stdOutLogger.Printf("Connection to %s using macaroon %s and cert %s", *address, *macaroonFile, *certFile)
 	lndOptions := ln.LNDoptions{
 		Address:      *address,
 		CertFile:     *certFile,
@@ -44,11 +44,11 @@ func main() {
 	}
 	lnClient, err := ln.NewLNDclient(lndOptions)
 	if err != nil {
-    stdOutLogger.Print("Error initializing LND client:")
+		stdOutLogger.Print("Error initializing LND client:")
 		panic(err)
 	}
 
-  // endpoint URLs compatible to the LND REST API
+	// endpoint URLs compatible to the LND REST API
 	e.POST("/v1/invoices", func(c echo.Context) error {
 		i := new(Invoice)
 		if err := c.Bind(i); err != nil {
