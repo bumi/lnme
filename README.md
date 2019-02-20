@@ -3,18 +3,18 @@
 LnTip provides a Bitcoin lightning tipping widget that can easily be integrated into any website.  
 
 It consistes of a small service written in Go that connects to a lnd node and exposes 
-a simple HTTP JSON API to create and monitor invoices. That API is used from a tiny 
-JavaScript widget that integrates in any website. 
+a simple HTTP JSON API to create and monitor invoices. This is a HTTP/REST proxy to the LND add and receive invoices API.
 
-See it in action: [moneyz.michaelbumann.com](http://moneyz.michaelbumann.com)
+That API is consumed from a tiny JavaScript widget that can be integrated into any website. 
 
-If [webln](https://github.com/wbobeirne/webln) is available it will be used to request the payment; 
+If [webln](https://github.com/wbobeirne/webln) is available the widget automatically use webln to request the payment; 
 otherwise an overlay will be shown with the payment request and a QR code.
+
 
 ## Motivation
 
-Besides experimenting with lnd and Go... :) I wanted a simple tipping button for my website 
-that uses my own lightning node and does not rely on external services.  
+I wanted a simple tipping button for my website that uses my own lightning node and does not rely on external services (trusts external services with handling the payments).
+
 
 ## Installation
 
@@ -22,7 +22,7 @@ To use LnTip a running [LND node](https://github.com/lightningnetwork/lnd/blob/m
 is required.  
 
 1. download the latest [release](https://github.com/bumi/lntip/releases)
-2. run `lntip` 
+2. run `invoices-proxy` to run it as systemd service have a look at the [systemd service example config](https://github.com/bumi/lntip/blob/master/examples/invoices-proxy.service)
 3. integrate the widget on website
 
 ### Configuration
@@ -33,11 +33,14 @@ To connect to the lnd node the cert, macaroon and address of the lnd node has to
 * cert: Path to the lnd cert file. default: ~/.lnd/tls.cert
 * macaroon: Path to the macaroon file. default: ~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon
 * bind: Host and port to listen on. default: :1323 (localhost:1323)
+* static-path: The proxy can serve files from a static folder (e.g. the JS/CSS files). Use this option to configure the path to a filder. (e.g. /home/bitcoin/lntip/assets) default: disabled
+* disable-cors: Disable CORS headers. (default: false)
 
 Example: 
 
-    $ ./lntip --address=lndhost.com:10009 --bind=localhost:4711
-    $ ./lntip --help
+    $ ./invoices_proxy --help
+    $ ./invoices_proxy --address=lndhost.com:10009 --bind=localhost:4711
+
 
 ### JavaScript Widget integration
 
@@ -86,6 +89,9 @@ tip.watchPayment().then((invoice) => {
 
 ## Development
 
+Use `go run` to ron the service locally: 
+
+    $ go run invoices_proxy.go --address=127.0.0.1:10009 --cert=/home/bitcoin/lightning/tls.cert --macaroon=/home/bitcoin/lightning/invoice.macaroon
 
 
 ## Contributing
