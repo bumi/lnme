@@ -22,7 +22,7 @@ To use LnTip a running [LND node](https://github.com/lightningnetwork/lnd/blob/m
 is required.  
 
 1. download the latest [release](https://github.com/bumi/lntip/releases)
-2. run `invoices-proxy` to run it as systemd service have a look at the [systemd service example config](https://github.com/bumi/lntip/blob/master/examples/invoices-proxy.service)
+2. run `invoices_proxy` (to run it as systemd service have a look at the [systemd service example config](https://github.com/bumi/lntip/blob/master/examples/invoices-proxy.service))
 3. integrate the widget on website
 
 ### Configuration
@@ -36,7 +36,7 @@ To connect to the lnd node the cert, macaroon and address of the lnd node has to
 * static-path: The proxy can serve files from a static folder (e.g. the JS/CSS files). Use this option to configure the path to a filder. (e.g. /home/bitcoin/lntip/assets) default: disabled
 * disable-cors: Disable CORS headers. (default: false)
 
-Example: 
+Examples: 
 
     $ ./invoices_proxy --help
     $ ./invoices_proxy --address=lndhost.com:10009 --bind=localhost:4711
