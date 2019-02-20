@@ -13,7 +13,7 @@ otherwise an overlay will be shown with the payment request and a QR code.
 
 ## Motivation
 
-I wanted a simple tipping button for my website that uses my own lightning node and does not rely on external services (trusts external services with handling the payments).
+I wanted a simple tipping button for my website that uses my own lightning node and does not rely on external services (does not need to trusts external services to handle the payments and hold the coins).
 
 
 ## Installation
