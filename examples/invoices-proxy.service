@@ -1,0 +1,21 @@
+[Unit]
+Description=LND invoices proxy
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+WorkingDirectory=/home/bitcoin/lntip
+ExecStart=/home/bitcoin/lntip/invoices_proxy --address=localhost:10009 --cert=/home/bitcoin/.lnd/tls.cert --macaroon=/home/bumi/bitcoin/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon --static-path=/home/bitcoin/lntip/assets
+
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+KillMode=process
+LimitNOFILE=128000
+TimeoutSec=240
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
