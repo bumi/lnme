@@ -52,12 +52,14 @@ func main() {
 	e.POST("/v1/invoices", func(c echo.Context) error {
 		i := new(Invoice)
 		if err := c.Bind(i); err != nil {
-			return c.JSON(http.StatusBadRequest, "bad request")
+			stdOutLogger.Printf("Bad request: %s", err)
+			return c.JSON(http.StatusBadRequest, "Bad request")
 		}
 
 		invoice, err := lnClient.AddInvoice(i.Value, i.Memo)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, "invoice creation error")
+			stdOutLogger.Printf("Error creating invoice: %s", err)
+			return c.JSON(http.StatusInternalServerError, "Error adding invoice")
 		}
 
 		return c.JSON(http.StatusOK, invoice)
@@ -65,7 +67,13 @@ func main() {
 
 	e.GET("/v1/invoice/:invoiceId", func(c echo.Context) error {
 		invoiceId := c.Param("invoiceId")
-		invoice, _ := lnClient.GetInvoice(invoiceId)
+		invoice, err := lnClient.GetInvoice(invoiceId)
+
+		if err != nil {
+			stdOutLogger.Printf("Error looking up invoice: %s", err)
+			return c.JSON(http.StatusInternalServerError, "Error fetching invoice")
+		}
+
 		return c.JSON(http.StatusOK, invoice)
 	})
 
