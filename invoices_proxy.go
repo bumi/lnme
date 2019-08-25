@@ -5,10 +5,25 @@ import (
 	"github.com/bumi/lntip/ln"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/didip/tollbooth"
+	"github.com/didip/tollbooth/limiter"
 	"log"
 	"net/http"
 	"os"
 )
+
+// move to file
+func LimitMiddleware(lmt *limiter.Limiter) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return echo.HandlerFunc(func(c echo.Context) error {
+		httpError := tollbooth.LimitByRequest(lmt, c.Response(), c.Request())
+			if httpError != nil {
+				return c.String(httpError.StatusCode, httpError.Message)
+			}
+			return next(c)
+		})
+	}
+}
 
 var stdOutLogger = log.New(os.Stdout, "", log.LstdFlags)
 
@@ -24,6 +39,7 @@ func main() {
 	bind := flag.String("bind", ":1323", "Host and port to bind on")
 	staticPath := flag.String("static-path", "", "Path to a static assets directory. Blank to disable serving static files")
 	disableCors := flag.Bool("disable-cors", false, "Disable CORS headers")
+	requestLimit := flag.Float64("request-limit", 10, "Request limit per second")
 
 	flag.Parse()
 
@@ -35,6 +51,11 @@ func main() {
 		e.Use(middleware.CORS())
 	}
 	e.Use(middleware.Recover())
+
+	if *requestLimit > 0 {
+		limiter := tollbooth.NewLimiter(*requestLimit, nil)
+		e.Use(LimitMiddleware(limiter))
+	}
 
 	stdOutLogger.Printf("Connection to %s using macaroon %s and cert %s", *address, *macaroonFile, *certFile)
 	lndOptions := ln.LNDoptions{
@@ -75,6 +96,11 @@ func main() {
 		}
 
 		return c.JSON(http.StatusOK, invoice)
+	})
+
+	// debug test endpoint
+	e.GET("/ping", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, "pong")
 	})
 
 	e.Logger.Fatal(e.Start(*bind))
