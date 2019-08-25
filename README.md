@@ -35,6 +35,7 @@ To connect to the lnd node the cert, macaroon and address of the lnd node has to
 * bind: Host and port to listen on. default: :1323 (localhost:1323)
 * static-path: The proxy can serve files from a static folder (e.g. the JS/CSS files). Use this option to configure the path to a filder. (e.g. /home/bitcoin/lntip/assets) default: disabled
 * disable-cors: Disable CORS headers. (default: false)
+* request-limit: Limit the allowed requests per second. (default: 10)
 
 Examples: 
 
