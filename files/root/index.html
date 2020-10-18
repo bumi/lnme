@@ -128,6 +128,13 @@
 
     <script src="/lnme/lnme.js" id="lnme-script"></script>
     <script>
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('amount')) {
+        document.getElementById('amount').value = urlParams.get('amount');
+      }
+      if (urlParams.get('memo')) {
+        document.getElementById('memo').value = urlParams.get('memo');
+      }
       document.getElementById('send-button').addEventListener('click', function(e) {
         e.preventDefault();
         e.target.setAttribute('disabled', true);
