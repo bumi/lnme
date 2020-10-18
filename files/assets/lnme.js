@@ -1,3 +1,4 @@
+'use strict';
 /*! https://github.com/robiveli/jpopup */
 !function(e,n){void 0===e&&void 0!==window&&(e=window),"function"==typeof define&&define.amd?define([],function(){return e.jPopup=n()}):"object"==typeof module&&module.exports?module.exports=n():e.jPopup=n()}(this,function(){"use strict";var n,o,t=function(){var e=0<arguments.length&&void 0!==arguments[0]?arguments[0]:"";1==(n=0!=e.shouldSetHash)&&(o=void 0!==e.hashtagValue?e.hashtagValue:"#popup"),i(e.content).then(a).then(1==n&&s(!0))},i=function(e){return u.classList.add("jPopupOpen"),Promise.resolve(document.body.insertAdjacentHTML("beforeend",'<div class="jPopup">\n                <button type="button" class="jCloseBtn">\n                    <div class="graphicIcon"></div>\n                </button>\n                <div class="content">'.concat(e,"</div>\n            </div>")))},s=function(e){1==e?window.location.hash=o:window.history.back()},d=function(e){27==e.keyCode&&t.prototype.close(!0)},c=function(){window.location.hash!==o&&t.prototype.close(!1)},a=function(){document.getElementsByClassName("jCloseBtn")[0].addEventListener("click",function(){t.prototype.close(!0)}),window.addEventListener("keydown",d),1==n&&window.addEventListener("hashchange",c)},u=document.querySelector("html");return t.prototype={close:function(e){u.classList.add("jPopupClosed"),1==n&&(e&&s(!1),window.removeEventListener("hashchange",c)),window.removeEventListener("keydown",d),document.getElementsByClassName("jPopup")[0].addEventListener("animationend",function(e){e.target.parentNode.removeChild(this),u.classList.remove("jPopupClosed"),u.classList.remove("jPopupOpen")})},open:function(e){t(e)}},t});
 
@@ -30,9 +31,8 @@ d=0;d<a;d+=1)for(var g=0;g<a;g+=1){for(var e=0,t=b.a(d,g),p=-1;1>=p;p+=1)if(!(0>
 [39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],e={I:function(b,a){var e=c(b,a);if("undefined"==
 typeof e)throw Error("bad rs block @ typeNumber:"+b+"/errorCorrectLevel:"+a);b=e.length/3;a=[];for(var d=0;d<b;d+=1)for(var g=e[3*d],h=e[3*d+1],t=e[3*d+2],p=0;p<g;p+=1){var q=t,f={};f.o=h;f.j=q;a.push(f)}return a}};return e}();return C}());
 
-class LnMe {
-
-  static paymentRequestTemplate = `<div id="lnme-wrapper" class="lnme-wrapper">
+// no static class variables because those are not supported on mobile
+var paymentRequestTemplate = `<div id="lnme-wrapper" class="lnme-wrapper">
     <h1 class="lnme-headline"><span class="lnme-memo"><span></h1>
     <h2 class="lnme-headline"><span class="lnme-value"></span> Sats</h2>
     <div class="lnme-qrcode"></div>
@@ -43,7 +43,9 @@ class LnMe {
       </div>
     </div>
   </div>`;
-  static paymentConfirmationTemplate = `<h1 class="lnme-header lnme-confirmation">Payment sent!</h1>`;
+var paymentConfirmationTemplate = `<h1 class="lnme-header lnme-confirmation">Payment sent!</h1>`;
+
+class LnMe {
 
   constructor(options) {
     this.script = document.getElementById('lnme-script');
@@ -65,7 +67,6 @@ class LnMe {
     if (document.getElementById('lnme-style')) { return; }
     // get the CSS file from the same source as the JS widget file
     let source = this.script.src.replace(/\.js$/, ".css");
-    console.log(source);
     let head = document.getElementsByTagName('head')[0];
     let css = document.createElement('link');
     css.id = "lnme-style";
@@ -133,7 +134,7 @@ class LnMe {
   }
 
   showPaymentRequest() {
-    this.render(LnMe.paymentRequestTemplate);
+    this.render(LnMePaymentRequestTemplate);
     this.populatePaymentRequest()
     return Promise.resolve(); // be compatible to payWithWebln()
   }
@@ -199,6 +200,6 @@ class LnMe {
   }
 
   thanks() {
-    this.target.innerHTML = LnMe.paymentConfirmationTemplate;
+    this.target.innerHTML = LnMePaymentConfirmationTemplate;
   }
 }
