@@ -131,13 +131,13 @@
       document.getElementById('send-button').addEventListener('click', function(e) {
         e.preventDefault();
         e.target.setAttribute('disabled', true);
+        document.getElementById('loader').style.display = 'block';
         var amount = document.getElementById('amount').value;
         var memo = document.getElementById('memo').value;
         var lnme = new LnMe({ value: amount, memo: memo, target: document.getElementById('lnme-wrapper') });
         lnme.showPaymentRequest = function() {
           document.getElementById('send-button').style.display = 'none';
           document.getElementById('lnme-wrapper').style.display = 'block';
-          document.getElementById('loader').style.display = 'block';
           this.populatePaymentRequest();
         }
         lnme.thanks = function() {
