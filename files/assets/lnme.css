@@ -4,21 +4,21 @@
   z-index:10000;
 }
 
-.lntip-payment-request {
+.jPopup .lnme-payment-request {
   width: 220px;
   margin: 0 auto;
   text-align: center;
 }
-.lntip-payment-request h1, .lntip-payment-request h2 {
+.jPopup .lnme-payment-request h1, .jPopup .lnme-payment-request h2 {
   text-align: center;
 }
 
-.lntip-details {
+.jPopup .lnme-details {
   width: 200px;
   overflow: hidden;
 }
 
-.lntip-copy {
+.jPopup .lnme-copy {
   cursor: pointer;
   display: inline;
 }

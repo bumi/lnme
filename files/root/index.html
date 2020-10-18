@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Send me some Sats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+      html {
+        width: 100%;
+        height: 100%;
+        font-size: 1vw;
+      }
+      body {
+        background-image: linear-gradient(60deg, #3d3393 0%, #2b76b9 37%, #2cacd1 65%, #35eb93 100%);
+        font-family: 'Source Code Pro', monospace;
+      }
+      .wrapper {
+        font-weight: 400;
+        line-height: 1.25;
+        margin-bottom: 1rem;
+        font-size: 4em;
+        color: #fff;
+        width: 640px;
+        margin: 1em auto;
+        text-align: center;
+      }
+      .wrapper h1 {
+        font-weight: 700;
+      }
+      .wrapper h2 {
+        font-weight: 400;
+      }
+      .wrapper a, .wrapper a:visited, .wrapper a:active {
+        color: #fff;
+        text-decoration:none;
+      }
+      .wrapper p {
+        margin: 0.5em 0;
+      }
+      input, input:focus {
+        outline: none;
+        background-color: transparent;
+        font-size: 1em;
+        font-weight: 700;
+        border: none;
+        border-bottom: 1px solid #fff;
+        text-align: center;
+        color: #fff;
+      }
+      ::placeholder {
+        color: #fff;
+        opacity: 0.3;
+      }
+      input.amount {
+        width: 300px;
+      }
+      input.memo {
+        width: 100%;
+      }
+      button {
+        color: #fff;
+        font-weight: 400;
+        font-size: 0.5em;
+        line-height: 1.5;
+        font-weight: 400;
+        width: 100%;
+        cursor: pointer;
+        border: none;
+        border-radius: 30px;
+        background-color: #2b76b9;
+      }
+      h2.lnme-value, h1.lnme-memo {
+        font-size: 2em;
+        font-weight: 400;
+      }
+
+      .lnme-wrapper {
+        margin-top: 1em;
+        font-size: 0.5em;
+        width: 100%;
+        white-space: nowrap;
+      }
+      .lnme-details {
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .lnme-link {
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .lnme-copy {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="form" id="form">
+        <p>
+          Send me<br>
+          <input type="number" placeholder="10000" class="amount" id="amount" autocomplete="off" min="100"> Sats
+          <br>
+          for
+          <br>
+          <input type="text" class="memo" id="memo" autocomplete="off">
+        </p>
+        <button id="send-button">
+          Send
+        </button>
+        <div id="lnme-wrapper" class="lnme-wrapper" style="display:none">
+          <div class="lnme-qrcode"></div>
+          <div class="lnme-details">
+            <a href="#" class="lnme-link"><span class="lnme-payment-request"></span></a>
+            <div class="lnme-copy">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/lnme/lnme.js" id="lnme-script"></script>
+    <script>
+      document.getElementById('send-button').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.target.setAttribute('disabled', true);
+        var amount = document.getElementById('amount').value;
+        var memo = document.getElementById('memo').value;
+        var lnme = new LnMe({ value: amount, memo: memo, target: document.getElementById('lnme-wrapper') });
+        lnme.showPaymentRequest = function() {
+          document.getElementById('send-button').style.display = 'none';
+          document.getElementById('lnme-wrapper').style.display = 'block';
+          this.populatePaymentRequest();
+        }
+        lnme.thanks = function() {
+          document.getElementById('form').innerHTML = '<h1 class="lnme-headline">Thanks!</h1>';
+        }
+        lnme.request();
+      });
+    </script>
+  </body>
+</html>

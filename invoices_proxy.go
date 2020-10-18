@@ -2,11 +2,12 @@ package main
 
 import (
 	"flag"
+	"github.com/GeertJohan/go.rice"
 	"github.com/bumi/lntip/ln"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
 	"github.com/didip/tollbooth"
 	"github.com/didip/tollbooth/limiter"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -16,7 +17,7 @@ import (
 func LimitMiddleware(lmt *limiter.Limiter) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
-		httpError := tollbooth.LimitByRequest(lmt, c.Response(), c.Request())
+			httpError := tollbooth.LimitByRequest(lmt, c.Response(), c.Request())
 			if httpError != nil {
 				return c.String(httpError.StatusCode, httpError.Message)
 			}
@@ -37,16 +38,27 @@ func main() {
 	certFile := flag.String("cert", "~/.lnd/tls.cert", "Path to the lnd tls.cert file")
 	macaroonFile := flag.String("macaroon", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the lnd macaroon file")
 	bind := flag.String("bind", ":1323", "Host and port to bind on")
-	staticPath := flag.String("static-path", "", "Path to a static assets directory. Blank to disable serving static files")
+	staticPath := flag.String("static-path", "", "Path to a static assets directory. Blank to not serve any static files")
+	disableHTML := flag.Bool("disable-html", false, "Disable HTML page")
 	disableCors := flag.Bool("disable-cors", false, "Disable CORS headers")
-	requestLimit := flag.Float64("request-limit", 10, "Request limit per second")
+	requestLimit := flag.Float64("request-limit", 5, "Request limit per second")
 
 	flag.Parse()
 
 	e := echo.New()
 	if *staticPath != "" {
-		e.Static("/static", *staticPath)
+		e.Static("/", *staticPath)
+	} else if !*disableHTML {
+		rootBox := rice.MustFindBox("files/root")
+		indexPage, err := rootBox.String("index.html")
+		if err == nil {
+			stdOutLogger.Print("Running page")
+			e.GET("/", func(c echo.Context) error {
+				return c.HTML(200, indexPage)
+			})
+		}
 	}
+
 	if !*disableCors {
 		e.Use(middleware.CORS())
 	}
@@ -56,6 +68,10 @@ func main() {
 		limiter := tollbooth.NewLimiter(*requestLimit, nil)
 		e.Use(LimitMiddleware(limiter))
 	}
+
+	// Embed static files and serve those on /lnme (e.g. /lnme/lnme.js)
+	assetHandler := http.FileServer(rice.MustFindBox("files/assets").HTTPBox())
+	e.GET("/lnme/*", echo.WrapHandler(http.StripPrefix("/lnme/", assetHandler)))
 
 	stdOutLogger.Printf("Connection to %s using macaroon %s and cert %s", *address, *macaroonFile, *certFile)
 	lndOptions := ln.LNDoptions{
