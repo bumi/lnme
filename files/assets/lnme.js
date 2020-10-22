@@ -48,14 +48,14 @@ var paymentConfirmationTemplate = `<h1 class="lnme-header lnme-confirmation">Pay
 class LnMe {
 
   constructor(options) {
+    options = options || {};
     this.script = document.getElementById('lnme-script');
     if (options.baseURL) {
       this.baseURL = options.baseURL;
-    } else if (this.script.dataset.lnmeBaseUrl) {
+    } else if (this.script && this.script.dataset.lnmeBaseUrl) {
       this.baseURL = this.script.dataset.lnmeBaseUrl;
     } else {
-      let url = new URL(this.script.src);
-      this.baseURL = `${url.protocol}//${url.host}`;
+      this.baseURL = `${document.location.protocol}//${document.location.host}`;
     }
     this.value = parseInt(options.value || 0);
     this.memo = options.memo || '';
@@ -66,7 +66,7 @@ class LnMe {
   loadStylesheet() {
     if (document.getElementById('lnme-style')) { return; }
     // get the CSS file from the same source as the JS widget file
-    let source = this.script.src.replace(/\.js$/, ".css");
+    let source = `${this.baseURL}/lnme/lnme.css`;
     let head = document.getElementsByTagName('head')[0];
     let css = document.createElement('link');
     css.id = "lnme-style";
