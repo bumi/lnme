@@ -24,6 +24,9 @@
         margin: 1em auto;
         text-align: center;
       }
+      .note {
+        font-size: 0.2em;
+      }
       .wrapper h1 {
         font-weight: 700;
       }
@@ -107,6 +110,10 @@
         <button id="send-button">
           Send
         </button>
+        <p id="onchain" class="note">
+          <a href="#" id="get-new-address" class="onchain">Prefer onchain Bitcoin? Click here!</a>
+        </p>
+
         <div id="lnme-wrapper" class="lnme-wrapper" style="display:none">
           <div class="lnme-qrcode"></div>
           <div class="lnme-details">
@@ -128,6 +135,15 @@
 
     <script src="/lnme/lnme.js" id="lnme-script"></script>
     <script>
+
+      document.getElementById("get-new-address").addEventListener('click', function(e) {
+        e.preventDefault();
+        var lnme = new LnMe({});
+        lnme.newAddress().then(address => {
+          document.getElementById("onchain").innerHTML = address;
+        });
+      });
+
       var urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('amount')) {
         document.getElementById('amount').value = urlParams.get('amount');

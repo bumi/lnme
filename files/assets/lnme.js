@@ -155,6 +155,19 @@ class LnMe {
       });
   }
 
+  newAddress() {
+    let args = {
+      method: 'POST',
+      mode: 'cors',
+      header: { 'Content-Type': 'application/json' }
+    };
+    return this._fetch(`${this.baseURL}/v1/newaddress`, args)
+      .then(address => {
+        this.address = address;
+        return address;
+      });
+  }
+
   requestPayment() {
     return this.addInvoice().then((invoice) => {
       if (typeof webln !== 'undefined') {
