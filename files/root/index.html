@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Send me some Sats</title>
+    <title>⚡ Send me some Sats</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet" />
     <style>
       html {
@@ -102,7 +102,7 @@
           <br>
           for
           <br>
-          <input type="text" class="memo" id="memo" autocomplete="off">
+          <input type="text" class="memo" id="memo" placeholder="message" autocomplete="off">
         </p>
         <button id="send-button">
           Send
@@ -137,11 +137,17 @@
       }
       document.getElementById('send-button').addEventListener('click', function(e) {
         e.preventDefault();
-        e.target.setAttribute('disabled', true);
         document.getElementById('loader').style.display = 'block';
-        var amount = document.getElementById('amount').value;
-        var memo = document.getElementById('memo').value;
-        var lnme = new LnMe({ value: amount, memo: memo, target: document.getElementById('lnme-wrapper') });
+
+        var amountElement = document.getElementById('amount');
+        var memoElement = document.getElementById('memo');
+
+        e.target.setAttribute('disabled', true);
+        amountElement.setAttribute('disabled', true);
+        memoElement.setAttribute('disabled', true);
+
+        var lnme = new LnMe({ value: amountElement.value, memo: memoElement.value, target: document.getElementById('lnme-wrapper') });
+
         lnme.showPaymentRequest = function() {
           document.getElementById('send-button').style.display = 'none';
           document.getElementById('lnme-wrapper').style.display = 'block';
