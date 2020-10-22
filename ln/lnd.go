@@ -50,6 +50,18 @@ func (c LNDclient) AddInvoice(value int64, memo string) (Invoice, error) {
 	return result, nil
 }
 
+func (c LNDclient) NewAddress() (string, error) {
+	stdOutLogger.Printf("Getting a new BTC address")
+  request := lnrpc.NewAddressRequest{
+    Type: lnrpc.AddressType_WITNESS_PUBKEY_HASH,
+  }
+  res, err := c.lndClient.NewAddress(c.ctx, &request)
+  if err != nil {
+    return "", err
+  }
+  return res.Address, nil
+}
+
 // GetInvoice takes an invoice ID and returns the invoice details including settlement details
 // An error is returned if no corresponding invoice was found.
 func (c LNDclient) GetInvoice(paymentHashStr string) (Invoice, error) {

@@ -102,6 +102,15 @@ func main() {
 		return c.JSON(http.StatusOK, invoice)
 	})
 
+  e.POST("/v1/newaddress", func(c echo.Context) error {
+    address, err := lnClient.NewAddress()
+    if err != nil {
+			stdOutLogger.Printf("Error getting a new BTC address: %s", err)
+			return c.JSON(http.StatusInternalServerError, "Error getting address")
+    }
+    return c.JSON(http.StatusOK, address)
+  })
+
 	e.GET("/v1/invoice/:invoiceId", func(c echo.Context) error {
 		invoiceId := c.Param("invoiceId")
 		invoice, err := lnClient.GetInvoice(invoiceId)
