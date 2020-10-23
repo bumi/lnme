@@ -13,7 +13,8 @@ import (
 	"os"
 )
 
-// move to file
+// Middleware for request limited to prevent too many requests
+// TODO: move to file
 func LimitMiddleware(lmt *limiter.Limiter) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
@@ -34,45 +35,55 @@ type Invoice struct {
 }
 
 func main() {
-	address := flag.String("address", "localhost:10009", "The host and port of the ln gRPC server")
-	certFile := flag.String("cert", "~/.lnd/tls.cert", "Path to the lnd tls.cert file")
-	macaroonFile := flag.String("macaroon", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the lnd macaroon file")
-	bind := flag.String("bind", ":1323", "Host and port to bind on")
-	staticPath := flag.String("static-path", "", "Path to a static assets directory. Blank to not serve any static files")
-	disableHTML := flag.Bool("disable-html", false, "Disable HTML page")
-	disableCors := flag.Bool("disable-cors", false, "Disable CORS headers")
-	requestLimit := flag.Float64("request-limit", 5, "Request limit per second")
+	address := flag.String("address", "localhost:10009", "The host and port of the lnd gRPC server.")
+	certFile := flag.String("cert", "~/.lnd/tls.cert", "Path to the lnd tls.cert file.")
+	macaroonFile := flag.String("macaroon", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the lnd macaroon file.")
+	bind := flag.String("bind", ":1323", "Host and port to bind on.")
+	staticPath := flag.String("static-path", "", "Path to a static assets directory. Leave blank to not serve any static files.")
+	disableWebsite := flag.Bool("disable-website", false, "Disable default embedded website.")
+	disableCors := flag.Bool("disable-cors", false, "Disable CORS headers.")
+	requestLimit := flag.Float64("request-limit", 5, "Request limit per second.")
 
 	flag.Parse()
 
 	e := echo.New()
+
+  // Serve static files if configured
 	if *staticPath != "" {
 		e.Static("/", *staticPath)
-	} else if !*disableHTML {
+  // Serve default page
+	} else if !*disableWebsite {
 		rootBox := rice.MustFindBox("files/root")
 		indexPage, err := rootBox.String("index.html")
 		if err == nil {
-			stdOutLogger.Print("Running page")
+			stdOutLogger.Print("Running embedded page")
 			e.GET("/", func(c echo.Context) error {
 				return c.HTML(200, indexPage)
 			})
-		}
+		} else {
+			stdOutLogger.Printf("Failed to run embedded website: %s", err)
+    }
 	}
+	// Embed static files and serve those on /lnme (e.g. /lnme/lnme.js)
+	assetHandler := http.FileServer(rice.MustFindBox("files/assets").HTTPBox())
+	e.GET("/lnme/*", echo.WrapHandler(http.StripPrefix("/lnme/", assetHandler)))
 
+
+  // CORS settings
 	if !*disableCors {
 		e.Use(middleware.CORS())
 	}
+
+  // Recover middleware recovers from panics anywhere in the request chain
 	e.Use(middleware.Recover())
 
+  // Request limit per second. DoS protection
 	if *requestLimit > 0 {
 		limiter := tollbooth.NewLimiter(*requestLimit, nil)
 		e.Use(LimitMiddleware(limiter))
 	}
 
-	// Embed static files and serve those on /lnme (e.g. /lnme/lnme.js)
-	assetHandler := http.FileServer(rice.MustFindBox("files/assets").HTTPBox())
-	e.GET("/lnme/*", echo.WrapHandler(http.StripPrefix("/lnme/", assetHandler)))
-
+  // Setup lightning client
 	stdOutLogger.Printf("Connection to %s using macaroon %s and cert %s", *address, *macaroonFile, *certFile)
 	lndOptions := ln.LNDoptions{
 		Address:      *address,
@@ -85,7 +96,9 @@ func main() {
 		panic(err)
 	}
 
-	// endpoint URLs compatible to the LND REST API
+	// Endpoint URLs compatible to the LND REST API v1
+  //
+  // Create new invoice
 	e.POST("/v1/invoices", func(c echo.Context) error {
 		i := new(Invoice)
 		if err := c.Bind(i); err != nil {
@@ -102,6 +115,7 @@ func main() {
 		return c.JSON(http.StatusOK, invoice)
 	})
 
+  // Get next BTC onchain address
   e.POST("/v1/newaddress", func(c echo.Context) error {
     address, err := lnClient.NewAddress()
     if err != nil {
@@ -111,6 +125,7 @@ func main() {
     return c.JSON(http.StatusOK, address)
   })
 
+  // Check invoice status
 	e.GET("/v1/invoice/:invoiceId", func(c echo.Context) error {
 		invoiceId := c.Param("invoiceId")
 		invoice, err := lnClient.GetInvoice(invoiceId)
@@ -123,7 +138,7 @@ func main() {
 		return c.JSON(http.StatusOK, invoice)
 	})
 
-	// debug test endpoint
+	// Debug test endpoint
 	e.GET("/ping", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "pong")
 	})

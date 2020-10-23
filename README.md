@@ -1,88 +1,108 @@
-# LnTip - your friendly lightning tipping widget
+# LnMe - notBTCPayServer but your friendly ⚡ payment page
 
-LnTip provides a Bitcoin lightning tipping widget that can easily be integrated into any website.  
+LnMe is your personal Bitcoin Lightning payment website and payment widget.
 
-It consistes of a small service written in Go that connects to a lnd node and exposes 
-a simple HTTP JSON API to create and monitor invoices. This is a HTTP/REST proxy to the LND add and receive invoices API.
-
-That API is consumed from a tiny JavaScript widget that can be integrated into any website. 
+It is a small service written in Go that connects to a lnd node and exposes a simple HTTP JSON API to create and monitor invoices. 
+It comes with a configurable personal ⚡ website and offers a JavaScript widget to integrate in existing websites.
 
 If [webln](https://github.com/wbobeirne/webln) is available the widget automatically use webln to request the payment; 
 otherwise an overlay will be shown with the payment request and a QR code.
 
-
 ## Motivation
 
-I wanted a simple tipping button for my website that uses my own lightning node and does not rely on external services (does not need to trusts external services to handle the payments and hold the coins).
+I wanted a simple way for people to send Lightning payments to me using my own lightning node.
+
+BTCPay Server is too big and hard to run for that as I do not need most features.
 
 
 ## Installation
 
-To use LnTip a running [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md) 
-is required.  
+LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required. 
+LnMe can easily run next to LND.
 
-1. download the latest [release](https://github.com/bumi/lntip/releases)
-2. run `invoices_proxy` (to run it as systemd service have a look at the [systemd service example config](https://github.com/bumi/lntip/blob/master/examples/invoices-proxy.service))
-3. integrate the widget on website
+1. Download the latest [release](https://github.com/bumi/lntip/releases)
+2. Run `lnme` (to run it as systemd service have a look at the [systemd service example config](https://github.com/bumi/lntip/blob/master/examples/invoices-proxy.service))
+3. Done.
 
 ### Configuration
 
-To connect to the lnd node the cert, macaroon and address of the lnd node has to be configured:
+#### LND configuration
+
+To connect to the lnd node the cert, macaroon and address of the lnd node has to be configured. LnMe uses the LND defaults.
 
 * address: Host and port of the lnd gRPC service. default: localhost:10009
 * cert: Path to the lnd cert file. default: ~/.lnd/tls.cert
 * macaroon: Path to the macaroon file. default: ~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon
-* bind: Host and port to listen on. default: :1323 (localhost:1323)
-* static-path: The proxy can serve files from a static folder (e.g. the JS/CSS files). Use this option to configure the path to a filder. (e.g. /home/bitcoin/lntip/assets) default: disabled
+
+#### Other configuration
+
+* static-path: Path to a folder that you want to serve with LnMe (e.g. /home/bitcoin/lnme/website). Use this if you want to customize your ⚡website. default: disabled
+* disable-website: Disable the default LnMe website. Disable the website if you only want to embed the LnMe widget on your existing website.
 * disable-cors: Disable CORS headers. (default: false)
-* request-limit: Limit the allowed requests per second. (default: 10)
+* bind: Host and port to listen on. (default: :1323)
+* request-limit: Limit the allowed requests per second. (default: 5)
 
-Examples: 
+#### Examples:
 
-    $ ./invoices_proxy --help
-    $ ./invoices_proxy --address=lndhost.com:10009 --bind=localhost:4711
+    $ ./lnme --help
+    $ ./lnme --address=lndhost.com:10009 --bind=localhost:4711
+    $ ./lnme --disable-website
+
+
+### Customize your ⚡ website
+
+LnMe comes with a default website but you can easily configure and build your own website and use the LnMe widget.
+
+Take a look at the [embedded default website](https://github.com/bumi/lntip/blob/master/files/root/index.html) for an example and use the `--static-path` option to configure LnMe to serve your static file.
+
+1. Create a new folder (e.g. /home/satoshi/my-ln-page)
+2. Create your index.html
+3. Run lnme: `lnme --static-path=/home/satoshi/my-ln-page
 
 
 ### JavaScript Widget integration
 
-Load the JavaScript file in your HTML page and configure the `lntip-host` attribute 
-to the host and port on which your lntip instance is running:
+You can integrate the LnMe widget in your existing website.
+
+#### 1. Add the LnMe JavaScript files
 
 ```html
-<script lntip-host="https://your-lntip-host.com:1323" src="https://cdn.jsdelivr.net/gh/bumi/lntip/assets/lntip.js" id="lntip-script"></script>
+<script data-lnme-base-url="https://your-lnme-host.com:1323" src="https://your-lnme-host.com/lnme/lnme.js"></script>
 ```
 
-#### Usage
+#### 2. Usage
 
-To request a lightning payment simply call `request()` on a `new LnTip({value: value, memo: memo})`:
+To request a lightning payment simply call `request()` on a `new LnMe({value: value, memo: memo})`:
 
 ```js
-new LnTip({ value: 1000, memo: 'high5' }).request()
+var lnme = new LnMe({ value: 1000, memo: 'high5' });
+lnme.request();
 ```
 
 Use it from a plain HTML link:
+
 ```html
-  <a href="#" onclick="javascript:new LnTip({ value: 1000, memo: 'high5' }).request();return false;">Tip me</a>
+<a href="#" onclick="javascript:new LnMe({ value: 1000, memo: 'high5' }).request();return false;">Tip me</a>
 ```
 
 ##### More advanced JS API:
 
 ```js
-let tip = new LnTip({ value: 1000, memo: 'high5' });
+let lnme = new LnMe({ value: 1000, memo: 'high5' });
 
 // get a new invoice and watch for a payment
 // promise resolves if the invoice is settled
-tip.requestPayment().then((invoice) => {
+lnme.requestPayment().then(invoice => {
   alert('YAY, thanks!');
 });
 
 // create a new invoice
-tip.addInvoice().then((invoice) => {
+lnme.addInvoice().then(invoice => {
   console.log(invoice.PaymentRequest)
 });
 
 // periodically watch if an invoice is settled
-tip.watchPayment().then((invoice) => {
+lnme.watchPayment().then(invoice => {
   alert('YAY, thanks!');
 });
 
@@ -90,14 +110,14 @@ tip.watchPayment().then((invoice) => {
 
 ## Development
 
-Use `go run` to ron the service locally: 
+Use `go run` to ron the service locally:
 
-    $ go run invoices_proxy.go --address=127.0.0.1:10009 --cert=/home/bitcoin/lightning/tls.cert --macaroon=/home/bitcoin/lightning/invoice.macaroon
+    $ go run lnme.go --address=127.0.0.1:10009 --cert=/home/bitcoin/lightning/tls.cert --macaroon=/home/bitcoin/lightning/invoice.macaroon
 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/bumi/lntip
+Bug reports and pull requests are welcome on GitHub at https://github.com/bumi/lnme
 
 ## License
 

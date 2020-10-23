@@ -25,6 +25,13 @@ type Invoice struct {
 	Settled        bool   `json:"settled"`
 }
 
+// LNDoptions are the options for the connection to the lnd node.
+type LNDoptions struct {
+	Address string
+	CertFile string
+	MacaroonFile string
+}
+
 type LNDclient struct {
 	lndClient lnrpc.LightningClient
 	ctx       context.Context
@@ -50,6 +57,7 @@ func (c LNDclient) AddInvoice(value int64, memo string) (Invoice, error) {
 	return result, nil
 }
 
+// NewAddress gets the next BTC onchain address.
 func (c LNDclient) NewAddress() (string, error) {
 	stdOutLogger.Printf("Getting a new BTC address")
   request := lnrpc.NewAddressRequest{
@@ -129,20 +137,4 @@ func NewLNDclient(lndOptions LNDoptions) (LNDclient, error) {
 	}
 
 	return result, nil
-}
-
-// LNDoptions are the options for the connection to the lnd node.
-type LNDoptions struct {
-	// Address of your LND node, including the port.
-	// Optional ("localhost:10009" by default).
-	Address string
-	// Path to the "tls.cert" file that your LND node uses.
-	// Optional ("tls.cert" by default).
-	CertFile string
-	// Path to the macaroon file that your LND node uses.
-	// "invoice.macaroon" if you only use the AddInvoice() and GetInvoice() methods
-	// (required by the middleware in the package "wall").
-	// "admin.macaroon" if you use the Pay() method (required by the client in the package "pay").
-	// Optional ("invoice.macaroon" by default).
-	MacaroonFile string
 }
