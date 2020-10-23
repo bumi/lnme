@@ -1,5 +1,4 @@
 # LnMe - your friendly ⚡ payment page
-## notBTCPayServer
 
 LnMe is a personal Bitcoin Lightning payment website and payment widget.
 
