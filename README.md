@@ -14,7 +14,7 @@ otherwise an overlay will be shown with the payment request and a QR code.
 
 I wanted a simple way for people to send Lightning payments using my own lightning node.
 
-BTCPay Server is too big and hard to run for that as I do not need most of its features.
+BTCPay Server is too big and hard to run for that and I do not need most of its features.
 
 
 ## Installation
@@ -46,9 +46,9 @@ To connect to the lnd node the cert, macaroon and address of the lnd node has to
 
 #### Examples:
 
-    $ ./lnme --help
-    $ ./lnme --address=lndhost.com:10009 --bind=localhost:4711
-    $ ./lnme --disable-website
+    $ lnme --help
+    $ lnme --address=lndhost.com:10009 --bind=localhost:4711
+    $ lnme --disable-website
 
 
 ### Customize your ⚡ website
