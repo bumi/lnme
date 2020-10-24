@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-    <title></title>
-	</head>
-	<body>
-    <script lntip-host="http://localhost:1323" src="http://localhost:1323/static/lntip.js" id="lntip-script"></script>
+  <head>
+    <meta charset="UTF-8">
+    <title>LnMe</title>
+  </head>
+  <body>
+    
+    <script data-lnme-base-url="http://localhost:1323" src="http://localhost:1323/static/lntip.js" id="lntip-script"></script>
 
-    <a href="#" onclick="javascript:new LnTip({ value: 1000, memo: 'thanks' }).request();return false;">Tip me</a>
-	</body>
+    <a href="#" onclick="javascript:new LnTip({ value: 1000, memo: 'thanks' }).request();return false;">
+      Send me some sats
+    </a>
+
+  </body>
 </html>
