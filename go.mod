@@ -1,4 +1,4 @@
-module github.com/bumi/lntip
+module github.com/bumi/lnme
 
 go 1.15
 
