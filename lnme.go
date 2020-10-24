@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/GeertJohan/go.rice"
-	"github.com/bumi/lntip/ln"
+	"github.com/bumi/lnme/ln"
 	"github.com/didip/tollbooth/v6"
 	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/labstack/echo/v4"
@@ -48,10 +48,10 @@ func main() {
 
 	e := echo.New()
 
-  // Serve static files if configured
+	// Serve static files if configured
 	if *staticPath != "" {
 		e.Static("/", *staticPath)
-  // Serve default page
+		// Serve default page
 	} else if !*disableWebsite {
 		rootBox := rice.MustFindBox("files/root")
 		indexPage, err := rootBox.String("index.html")
@@ -62,28 +62,27 @@ func main() {
 			})
 		} else {
 			stdOutLogger.Printf("Failed to run embedded website: %s", err)
-    }
+		}
 	}
 	// Embed static files and serve those on /lnme (e.g. /lnme/lnme.js)
 	assetHandler := http.FileServer(rice.MustFindBox("files/assets").HTTPBox())
 	e.GET("/lnme/*", echo.WrapHandler(http.StripPrefix("/lnme/", assetHandler)))
 
-
-  // CORS settings
+	// CORS settings
 	if !*disableCors {
 		e.Use(middleware.CORS())
 	}
 
-  // Recover middleware recovers from panics anywhere in the request chain
+	// Recover middleware recovers from panics anywhere in the request chain
 	e.Use(middleware.Recover())
 
-  // Request limit per second. DoS protection
+	// Request limit per second. DoS protection
 	if *requestLimit > 0 {
 		limiter := tollbooth.NewLimiter(*requestLimit, nil)
 		e.Use(LimitMiddleware(limiter))
 	}
 
-  // Setup lightning client
+	// Setup lightning client
 	stdOutLogger.Printf("Connection to %s using macaroon %s and cert %s", *address, *macaroonFile, *certFile)
 	lndOptions := ln.LNDoptions{
 		Address:      *address,
@@ -97,8 +96,8 @@ func main() {
 	}
 
 	// Endpoint URLs compatible to the LND REST API v1
-  //
-  // Create new invoice
+	//
+	// Create new invoice
 	e.POST("/v1/invoices", func(c echo.Context) error {
 		i := new(Invoice)
 		if err := c.Bind(i); err != nil {
@@ -115,17 +114,17 @@ func main() {
 		return c.JSON(http.StatusOK, invoice)
 	})
 
-  // Get next BTC onchain address
-  e.POST("/v1/newaddress", func(c echo.Context) error {
-    address, err := lnClient.NewAddress()
-    if err != nil {
+	// Get next BTC onchain address
+	e.POST("/v1/newaddress", func(c echo.Context) error {
+		address, err := lnClient.NewAddress()
+		if err != nil {
 			stdOutLogger.Printf("Error getting a new BTC address: %s", err)
 			return c.JSON(http.StatusInternalServerError, "Error getting address")
-    }
-    return c.JSON(http.StatusOK, address)
-  })
+		}
+		return c.JSON(http.StatusOK, address)
+	})
 
-  // Check invoice status
+	// Check invoice status
 	e.GET("/v1/invoice/:invoiceId", func(c echo.Context) error {
 		invoiceId := c.Param("invoiceId")
 		invoice, err := lnClient.GetInvoice(invoiceId)
