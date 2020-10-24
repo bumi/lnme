@@ -2,6 +2,8 @@
 
 LnMe is a personal Bitcoin Lightning payment website and payment widget.
 
+![demo](./lnme-demo.gif)
+
 It is a small service written in Go that connects to a [lnd node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md) and exposes a simple HTTP JSON API to create and monitor invoices. 
 It comes with a configurable personal payment website and offers a JavaScript widget to integrate in existing websites.
 
