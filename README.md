@@ -116,6 +116,12 @@ Use `go run` to ron the service locally:
 
     $ go run lnme.go --address=127.0.0.1:10009 --cert=/home/bitcoin/lightning/tls.cert --macaroon=/home/bitcoin/lightning/invoice.macaroon
 
+## Build
+
+LnMe uses [go.rice](https://github.com/GeertJohan/go.rice) to embed assets (HTML, JS, and CSS files). run `rice embed-go`
+
+    $ rice embed-go
+    $ go build
 
 ## Contributing
 
