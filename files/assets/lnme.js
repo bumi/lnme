@@ -101,12 +101,12 @@ class LnMe {
   payWithWebln() {
     if (!webln.isEnabled) {
       webln.enable().then((weblnResponse) => {
-        return webln.sendPayment({ paymentRequest: this.invoice.payment_request })
+        return webln.sendPayment(this.invoice.payment_request);
       }).catch((e) => {
         return this.showPaymentRequest();
       })
     } else {
-      return webln.sendPayment({ paymentRequest: this.invoice.payment_request })
+      return webln.sendPayment(this.invoice.payment_request);
     }
   }
 
