@@ -1,0 +1,19 @@
+[Unit]
+Description=LnMe your friendly lightning payment page
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+ExecStart=/home/bitcoin/lnme --address=localhost:10009 --cert=/home/bitcoin/.lnd/tls.cert --macaroon=/home/bumi/bitcoin/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+KillMode=process
+LimitNOFILE=128000
+TimeoutSec=240
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
