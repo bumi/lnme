@@ -22,8 +22,8 @@ BTCPay Server is too big and hard to run for that as I do not need most of its f
 LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required. 
 LnMe can easily run next to LND on the same system.
 
-1. Download the latest [release](https://github.com/bumi/lntip/releases)
-2. Run `lnme` (to run it as systemd service have a look at the [systemd service example config](https://github.com/bumi/lntip/blob/master/examples/invoices-proxy.service))
+1. Download the latest [release](https://github.com/bumi/lnme/releases)
+2. Run `lnme` (to run it as systemd service have a look at the [systemd service example config](https://github.com/bumi/lnme/blob/master/examples/lnme.service))
 3. Done.
 
 ### Configuration
@@ -55,7 +55,7 @@ To connect to the lnd node the cert, macaroon and address of the lnd node has to
 
 LnMe comes with a default website but you can easily configure and build your own using the the LnMe JavaScript widget or JSON API.
 
-Take a look at the [embedded default website](https://github.com/bumi/lntip/blob/master/files/root/index.html) for an example and use the `--static-path` option to configure LnMe to serve your static file.
+Take a look at the [embedded default website](https://github.com/bumi/lnme/blob/master/files/root/index.html) for an example and use the `--static-path` option to configure LnMe to serve your static file.
 
 1. Create a new folder (e.g. /home/satoshi/my-ln-page)
 2. Create your index.html
