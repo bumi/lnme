@@ -32,7 +32,7 @@ d=0;d<a;d+=1)for(var g=0;g<a;g+=1){for(var e=0,t=b.a(d,g),p=-1;1>=p;p+=1)if(!(0>
 typeof e)throw Error("bad rs block @ typeNumber:"+b+"/errorCorrectLevel:"+a);b=e.length/3;a=[];for(var d=0;d<b;d+=1)for(var g=e[3*d],h=e[3*d+1],t=e[3*d+2],p=0;p<g;p+=1){var q=t,f={};f.o=h;f.j=q;a.push(f)}return a}};return e}();return C}());
 
 // no static class variables because those are not supported on mobile
-var paymentRequestTemplate = `<div id="lnme-wrapper" class="lnme-wrapper">
+var LnMePaymentRequestTemplate = `<div id="lnme-wrapper" class="lnme-wrapper">
     <h1 class="lnme-headline"><span class="lnme-memo"><span></h1>
     <h2 class="lnme-headline"><span class="lnme-value"></span> Sats</h2>
     <div class="lnme-qrcode"></div>
@@ -43,13 +43,13 @@ var paymentRequestTemplate = `<div id="lnme-wrapper" class="lnme-wrapper">
       </div>
     </div>
   </div>`;
-var paymentConfirmationTemplate = `<h1 class="lnme-header lnme-confirmation">Payment sent!</h1>`;
+var LnMePaymentConfirmationTemplate = `<h1 class="lnme-header lnme-confirmation">Payment sent!</h1>`;
 
 class LnMe {
 
   constructor(options) {
     options = options || {};
-    this.script = document.getElementById('lnme-script');
+    this.script = document.querySelector("[src*='lnme.js']");
     if (options.baseURL) {
       this.baseURL = options.baseURL;
     } else if (this.script && this.script.dataset.lnmeBaseUrl) {
