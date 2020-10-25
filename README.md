@@ -23,7 +23,7 @@ LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/ma
 LnMe can easily run next to LND on the same system.
 
 1. Download the latest [release](https://github.com/bumi/lnme/releases)
-2. Run `lnme` (to run it as systemd service have a look at the [systemd service example config](https://github.com/bumi/lnme/blob/master/examples/lnme.service))
+2. Run `lnme`
 3. Done.
 
 ### Configuration
@@ -49,6 +49,21 @@ To connect to the lnd node the cert, macaroon and address of the lnd node has to
     $ lnme --help
     $ lnme --address=lndhost.com:10009 --bind=localhost:4711
     $ lnme --disable-website
+
+
+### Deployment
+
+To run LnMe as systemd service have a look at the [systemd service example config](https://github.com/bumi/lnme/blob/master/examples/lnme.service)
+
+I am running LnMe behind a reverse proxy using [caddy](https://caddyserver.com/) which comes with [fully-managed HTTPS](https://caddyserver.com/docs/quick-starts/https) via [letsencrypt](https://letsencrypt.org/).
+
+Example Caddyfile:
+```
+lnme.michaelbumann.com {
+  reverse_proxy 127.0.0.1:1323
+}
+```
+`$ caddy  --config /etc/caddy/Caddyfile`
 
 
 ### Customize your ⚡ website
