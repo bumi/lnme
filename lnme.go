@@ -141,7 +141,11 @@ func main() {
 		return c.JSON(http.StatusOK, "pong")
 	})
 
-	e.Logger.Fatal(e.Start(":" + cfg.String("port")))
+  port := cfg.String("port")
+  if os.Getenv("PORT") != "" {
+    port = os.Getenv("PORT")
+  }
+	e.Logger.Fatal(e.Start(":" + port))
 }
 
 func LoadConfig() *koanf.Koanf {
