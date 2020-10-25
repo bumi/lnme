@@ -1,12 +1,11 @@
-disable_website = false
-disable_cors = false
-request_limit = 5
+disable-website = false
+disable-cors = false
+request-limit = 5
 port = "1323"
-static_path = "" # Blank means disabled
+static-path = "" # Blank means disabled
 
-[lnd]
-address = "127.0.0.1:10009"
-cert = "TLS cert as hex"
-cert_path = "Alternative to cert. Path to TLS cert file"
-macaroon = "Macaroon as hex"
-macaroon_path = "Alternative to macaroon. Path to macaroon file"
+lnd-address = "127.0.0.1:10009"
+lnd-cert = "TLS cert as hex"
+lnd-cert-path = "Alternative to cert. Path to TLS cert file"
+lnd-macaroon = "Macaroon as hex"
+lnd-macaroon-path = "Alternative to macaroon. Path to macaroon file"

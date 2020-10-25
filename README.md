@@ -39,23 +39,48 @@ LnMe can easily run next to LND on the same system.
 
 To connect to the lnd node the cert, macaroon and address of the lnd node has to be configured. LnMe uses the LND defaults.
 
-* `address`: Host and port of the lnd gRPC service. default: localhost:10009
-* `cert`: Path to the lnd cert file. default: ~/.lnd/tls.cert
-* `macaroon`: Path to the macaroon file. default: ~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon
+* `lnd-address`: Host and port of the LND gRPC service. default: localhost:10009
+* `lnd-cert-path`: Path to the LND TLS cert file. default: ~/.lnd/tls.cert
+* `lnd-macaroon-path`: Path to the LND macaroon file. default: ~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon (invoice.macaroon is recommended)
+
+Instead of the path to the macaroon and cert files you can also provide the hex strings:
+
+* `lnd-cert`: LND TLS cert as HEX string.
+* `lnd-macaroon`: LND macaroon file. (invoice.macaroon is recommended)
 
 #### Other configuration
 
 * `static-path`: Path to a folder that you want to serve with LnMe (e.g. /home/bitcoin/lnme/website). Use this if you want to customize your ⚡website. default: disabled
 * `disable-website`: Disable the default LnMe website. Disable the website if you only want to embed the LnMe widget on your existing website.
 * `disable-cors`: Disable CORS headers. (default: false)
-* `bind`: Host and port to listen on. (default: :1323)
+* `port`: Port to listen on. (default: 1323)
 * `request-limit`: Limit the allowed requests per second. (default: 5)
+
+Depending on your deployment needs LnMe can be configured using the following options:
+
+1. Command line flags
+2. Environment variables
+3. Config TOML file
 
 #### Examples:
 
+##### Command line flags:
+
     $ lnme --help
-    $ lnme --address=lndhost.com:10009 --bind=localhost:4711
+    $ lnme --lnd-address=lndhost.com:10009 --port=4711
     $ lnme --disable-website
+
+##### TOML config file
+
+See [config.toml.example](./toml.config.example) for an example file.
+
+    $ lnme --config=/path/to/config.toml
+
+##### Environment variables
+
+All environment variables must be prefixed by `LNME_` use `_` instead of `-`
+
+    $ LNME_LND_ADDRESS=127.0.0.1:10005 lnme
 
 
 ### Deployment

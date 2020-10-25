@@ -46,10 +46,10 @@ func main() {
 	e := echo.New()
 
 	// Serve static files if configured
-	if cfg.String("static_path") != "" {
-		e.Static("/", cfg.String("static_path"))
+	if cfg.String("static-path") != "" {
+		e.Static("/", cfg.String("static-path"))
 		// Serve default page
-	} else if !cfg.Bool("disable_website") {
+	} else if !cfg.Bool("disable-website") {
 		rootBox := rice.MustFindBox("files/root")
 		indexPage, err := rootBox.String("index.html")
 		if err == nil {
@@ -66,7 +66,7 @@ func main() {
 	e.GET("/lnme/*", echo.WrapHandler(http.StripPrefix("/lnme/", assetHandler)))
 
 	// CORS settings
-	if !cfg.Bool("disable_cors") {
+	if !cfg.Bool("disable-cors") {
 		e.Use(middleware.CORS())
 	}
 
@@ -74,19 +74,19 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Request limit per second. DoS protection
-	if cfg.Int("request_limit") > 0 {
-		limiter := tollbooth.NewLimiter(cfg.Float64("request_limit"), nil)
+	if cfg.Int("request-limit") > 0 {
+		limiter := tollbooth.NewLimiter(cfg.Float64("request-limit"), nil)
 		e.Use(LimitMiddleware(limiter))
 	}
 
 	// Setup lightning client
-	stdOutLogger.Printf("Connecting to %s", cfg.String("lnd.address"))
+	stdOutLogger.Printf("Connecting to %s", cfg.String("lnd-address"))
 	lndOptions := ln.LNDoptions{
-		Address:      cfg.String("lnd.address"),
-		CertFile:     cfg.String("lnd.cert_path"),
-		CertHex:      cfg.String("lnd.cert"),
-		MacaroonFile: cfg.String("lnd.macaroon_path"),
-		MacaroonHex:  cfg.String("lnd.macaroon"),
+		Address:      cfg.String("lnd-address"),
+		CertFile:     cfg.String("lnd-cert-path"),
+		CertHex:      cfg.String("lnd-cert"),
+		MacaroonFile: cfg.String("lnd-macaroon-path"),
+		MacaroonHex:  cfg.String("lnd-macaroon"),
 	}
 	lnClient, err := ln.NewLNDclient(lndOptions)
 	if err != nil {
@@ -148,13 +148,13 @@ func LoadConfig() *koanf.Koanf {
 	k := koanf.New(".")
 
 	f := flag.NewFlagSet("LnMe", flag.ExitOnError)
-	f.String("lnd.address", "localhost:10009", "The host and port of the LND gRPC server.")
-	f.String("lnd.macaroon_path", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the LND macaroon file.")
-	f.String("lnd.cert_path", "~/.lnd/tls.cert", "Path to the LND tls.cert file.")
-	f.Bool("disable_website", false, "Disable default embedded website.")
-	f.Bool("disable_cors", false, "Disable CORS headers.")
-	f.Float64("request_limit", 5, "Request limit per second.")
-	f.String("static_path", "", "Path to a static assets directory.")
+	f.String("lnd-address", "localhost:10009", "The host and port of the LND gRPC server.")
+	f.String("lnd-macaroon-path", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the LND macaroon file.")
+	f.String("lnd-cert-path", "~/.lnd/tls.cert", "Path to the LND tls.cert file.")
+	f.Bool("disable-website", false, "Disable default embedded website.")
+	f.Bool("disable-cors", false, "Disable CORS headers.")
+	f.Float64("request-limit", 5, "Request limit per second.")
+	f.String("static-path", "", "Path to a static assets directory.")
 	f.String("port", "1323", "Port to bind on.")
 	var configPath string
 	f.StringVar(&configPath, "config", "config.toml", "Path to a .toml config file.")
@@ -167,8 +167,7 @@ func LoadConfig() *koanf.Koanf {
 
 	// Load config from environment variables
 	k.Load(env.Provider("LNME_", ".", func(s string) string {
-		return strings.Replace(strings.ToLower(
-			strings.TrimPrefix(s, "LNME_")), "_", ".", -1)
+		return strings.Replace(strings.ToLower(strings.TrimPrefix(s, "LNME_")), "_", "-", -1)
 	}), nil)
 
 	// Load config from file if available
