@@ -1,0 +1,12 @@
+disable_website = false
+disable_cors = false
+request_limit = 5
+port = "1323"
+static_path = "" # Blank means disabled
+
+[lnd]
+address = "127.0.0.1:10009"
+cert = "TLS cert as hex"
+cert_path = "Alternative to cert. Path to TLS cert file"
+macaroon = "Macaroon as hex"
+macaroon_path = "Alternative to macaroon. Path to macaroon file"
