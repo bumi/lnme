@@ -46,7 +46,7 @@ To connect to the lnd node the cert, macaroon and address of the lnd node has to
 Instead of the path to the macaroon and cert files you can also provide the hex strings:
 
 * `lnd-cert`: LND TLS cert as HEX string.
-* `lnd-macaroon`: LND macaroon file. (invoice.macaroon is recommended)
+* `lnd-macaroon`: LND macaroon HEX string. (invoice.macaroon is recommended)
 
 #### Other configuration
 
