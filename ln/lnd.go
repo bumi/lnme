@@ -1,11 +1,13 @@
 package ln
 
 import (
+  "fmt"
 	"context"
 	"encoding/hex"
 	"io/ioutil"
 	"log"
 	"os"
+	"crypto/x509"
 
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/macaroons"
@@ -29,7 +31,9 @@ type Invoice struct {
 type LNDoptions struct {
 	Address string
 	CertFile string
+  CertHex string
 	MacaroonFile string
+  MacaroonHex string
 }
 
 type LNDclient struct {
@@ -103,23 +107,52 @@ func (c LNDclient) GetInvoice(paymentHashStr string) (Invoice, error) {
 func NewLNDclient(lndOptions LNDoptions) (LNDclient, error) {
 	result := LNDclient{}
 
-	creds, err := credentials.NewClientTLSFromFile(lndOptions.CertFile, "")
-	if err != nil {
-		return result, err
-	}
+  // Get credentials either from a hex string or a file
+  var creds credentials.TransportCredentials
+  // if a hex string is provided
+  if lndOptions.CertHex != "" {
+    cp := x509.NewCertPool()
+    cert, err := hex.DecodeString(lndOptions.CertHex)
+    if err != nil {
+      return result, err
+    }
+    cp.AppendCertsFromPEM(cert)
+    creds = credentials.NewClientTLSFromCert(cp, "")
+  // if a path to a cert file is provided
+  } else if lndOptions.CertFile != "" {
+    credsFromFile, err := credentials.NewClientTLSFromFile(lndOptions.CertFile, "")
+    if err != nil {
+      return result, err
+    }
+    creds = credsFromFile // make it available outside of the else if block
+  } else {
+    return result, fmt.Errorf("LND credential is missing")
+  }
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(creds),
 	}
 
-	macaroonData, err := ioutil.ReadFile(lndOptions.MacaroonFile)
-	if err != nil {
-		return result, err
-	}
-	mac := &macaroon.Macaroon{}
-	if err = mac.UnmarshalBinary(macaroonData); err != nil {
-		return result, err
-	}
+  var macaroonData []byte
+  if lndOptions.MacaroonHex  != "" {
+    macBytes, err := hex.DecodeString(lndOptions.MacaroonHex)
+	  if err != nil {
+		  return result, err
+	  }
+    macaroonData = macBytes
+  } else if lndOptions.MacaroonFile != "" {
+	  macBytes, err := ioutil.ReadFile(lndOptions.MacaroonFile)
+	  if err != nil {
+		  return result, err
+	  }
+    macaroonData = macBytes // make it available outside of the else if block
+  } else {
+    return result, fmt.Errorf("LND macaroon is missing")
+  }
 
+  mac := &macaroon.Macaroon{}
+  if err := mac.UnmarshalBinary(macaroonData); err != nil {
+		return result, err
+	}
 	macCred := macaroons.NewMacaroonCredential(mac)
 	opts = append(opts, grpc.WithPerRPCCredentials(macCred))
 

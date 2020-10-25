@@ -1,16 +1,22 @@
 package main
 
 import (
-	"flag"
-	"github.com/GeertJohan/go.rice"
+  "strings"
+  "flag"
+	"log"
+	"net/http"
+	"os"
 	"github.com/bumi/lnme/ln"
+	"github.com/GeertJohan/go.rice"
 	"github.com/didip/tollbooth/v6"
 	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"log"
-	"net/http"
-	"os"
+	"github.com/knadh/koanf"
+	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/parsers/toml"
+  "github.com/knadh/koanf/providers/env"
+  "github.com/knadh/koanf/providers/basicflag"
 )
 
 // Middleware for request limited to prevent too many requests
@@ -35,24 +41,15 @@ type Invoice struct {
 }
 
 func main() {
-	address := flag.String("address", "localhost:10009", "The host and port of the lnd gRPC server.")
-	certFile := flag.String("cert", "~/.lnd/tls.cert", "Path to the lnd tls.cert file.")
-	macaroonFile := flag.String("macaroon", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the lnd macaroon file.")
-	bind := flag.String("bind", ":1323", "Host and port to bind on.")
-	staticPath := flag.String("static-path", "", "Path to a static assets directory. Leave blank to not serve any static files.")
-	disableWebsite := flag.Bool("disable-website", false, "Disable default embedded website.")
-	disableCors := flag.Bool("disable-cors", false, "Disable CORS headers.")
-	requestLimit := flag.Float64("request-limit", 5, "Request limit per second.")
+  cfg := LoadConfig()
 
-	flag.Parse()
-
-	e := echo.New()
+  e := echo.New()
 
 	// Serve static files if configured
-	if *staticPath != "" {
-		e.Static("/", *staticPath)
+	if cfg.String("static_path") != "" {
+		e.Static("/", cfg.String("static_path"))
 		// Serve default page
-	} else if !*disableWebsite {
+	} else if !cfg.Bool("disable_website") {
 		rootBox := rice.MustFindBox("files/root")
 		indexPage, err := rootBox.String("index.html")
 		if err == nil {
@@ -69,7 +66,7 @@ func main() {
 	e.GET("/lnme/*", echo.WrapHandler(http.StripPrefix("/lnme/", assetHandler)))
 
 	// CORS settings
-	if !*disableCors {
+  if !cfg.Bool("disable_cors") {
 		e.Use(middleware.CORS())
 	}
 
@@ -77,17 +74,19 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Request limit per second. DoS protection
-	if *requestLimit > 0 {
-		limiter := tollbooth.NewLimiter(*requestLimit, nil)
+	if cfg.Int("request_limit") > 0 {
+		limiter := tollbooth.NewLimiter(cfg.Float64("request_limit"), nil)
 		e.Use(LimitMiddleware(limiter))
 	}
 
 	// Setup lightning client
-	stdOutLogger.Printf("Connection to %s using macaroon %s and cert %s", *address, *macaroonFile, *certFile)
+	stdOutLogger.Printf("Connecting to %s", cfg.String("lnd.address"))
 	lndOptions := ln.LNDoptions{
-		Address:      *address,
-		CertFile:     *certFile,
-		MacaroonFile: *macaroonFile,
+    Address:      cfg.String("lnd.address"),
+		CertFile:     cfg.String("lnd.cert_path"),
+    CertHex:      cfg.String("lnd.cert"),
+		MacaroonFile: cfg.String("lnd.macaroon_path"),
+    MacaroonHex:  cfg.String("lnd.macaroon"),
 	}
 	lnClient, err := ln.NewLNDclient(lndOptions)
 	if err != nil {
@@ -142,5 +141,44 @@ func main() {
 		return c.JSON(http.StatusOK, "pong")
 	})
 
-	e.Logger.Fatal(e.Start(*bind))
+  e.Logger.Fatal(e.Start(":" + cfg.String("port")))
+}
+
+func LoadConfig() *koanf.Koanf {
+  k := koanf.New(".")
+
+  f := flag.NewFlagSet("LnMe", flag.ExitOnError)
+	f.String("lnd.address", "localhost:10009", "The host and port of the LND gRPC server.")
+	f.String("lnd.macaroon_path", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the LND macaroon file.")
+	f.String("lnd.cert_path", "~/.lnd/tls.cert", "Path to the LND tls.cert file.")
+  f.Bool("disable_website", false, "Disable default embedded website.")
+  f.Bool("disable_cors", false, "Disable CORS headers.")
+  f.Float64("request_limit", 5, "Request limit per second.")
+  f.String("static_path", "", "Path to a static assets directory.")
+  f.String("port", "1323", "Port to bind on.")
+  var configPath string
+	f.StringVar(&configPath, "config", "config.toml", "Path to a .toml config file.")
+  f.Parse(os.Args[1:])
+
+  // Load config from flags, including defaults
+  if err := k.Load(basicflag.Provider(f, "."), nil); err != nil {
+		log.Fatalf("Error loading config: %v", err)
+	}
+
+  // Load config from environment variables
+  k.Load(env.Provider("LNME_", ".", func(s string) string {
+		return strings.Replace(strings.ToLower(
+			strings.TrimPrefix(s, "LNME_")), "_", ".", -1)
+	}), nil)
+
+  // Load config from file if available
+  if configPath != "" {
+    if _, err := os.Stat(configPath); err == nil {
+	    if err := k.Load(file.Provider(configPath), toml.Parser()); err != nil {
+		    log.Fatalf("Error loading config file: %v", err)
+      }
+	  }
+  }
+
+  return k
 }
