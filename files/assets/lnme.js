@@ -210,6 +210,11 @@ class LnMe {
       shouldSetHash: false
     });
     this.target = document.querySelector('.jPopup .content').firstElementChild;
+
+    // When popup is closed, we stop watching the payment.
+    document.querySelector('.jCloseBtn').addEventListener('click', (e) => {
+      this.stopWatchingPayment();
+    });
   }
 
   thanks() {
