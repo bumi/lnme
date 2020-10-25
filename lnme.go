@@ -1,22 +1,22 @@
 package main
 
 import (
-  "strings"
-  "flag"
+	"flag"
+	"github.com/GeertJohan/go.rice"
+	"github.com/bumi/lnme/ln"
+	"github.com/didip/tollbooth/v6"
+	"github.com/didip/tollbooth/v6/limiter"
+	"github.com/knadh/koanf"
+	"github.com/knadh/koanf/parsers/toml"
+	"github.com/knadh/koanf/providers/basicflag"
+	"github.com/knadh/koanf/providers/env"
+	"github.com/knadh/koanf/providers/file"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"log"
 	"net/http"
 	"os"
-	"github.com/bumi/lnme/ln"
-	"github.com/GeertJohan/go.rice"
-	"github.com/didip/tollbooth/v6"
-	"github.com/didip/tollbooth/v6/limiter"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/knadh/koanf"
-	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/parsers/toml"
-  "github.com/knadh/koanf/providers/env"
-  "github.com/knadh/koanf/providers/basicflag"
+	"strings"
 )
 
 // Middleware for request limited to prevent too many requests
@@ -41,9 +41,9 @@ type Invoice struct {
 }
 
 func main() {
-  cfg := LoadConfig()
+	cfg := LoadConfig()
 
-  e := echo.New()
+	e := echo.New()
 
 	// Serve static files if configured
 	if cfg.String("static_path") != "" {
@@ -66,7 +66,7 @@ func main() {
 	e.GET("/lnme/*", echo.WrapHandler(http.StripPrefix("/lnme/", assetHandler)))
 
 	// CORS settings
-  if !cfg.Bool("disable_cors") {
+	if !cfg.Bool("disable_cors") {
 		e.Use(middleware.CORS())
 	}
 
@@ -82,11 +82,11 @@ func main() {
 	// Setup lightning client
 	stdOutLogger.Printf("Connecting to %s", cfg.String("lnd.address"))
 	lndOptions := ln.LNDoptions{
-    Address:      cfg.String("lnd.address"),
+		Address:      cfg.String("lnd.address"),
 		CertFile:     cfg.String("lnd.cert_path"),
-    CertHex:      cfg.String("lnd.cert"),
+		CertHex:      cfg.String("lnd.cert"),
 		MacaroonFile: cfg.String("lnd.macaroon_path"),
-    MacaroonHex:  cfg.String("lnd.macaroon"),
+		MacaroonHex:  cfg.String("lnd.macaroon"),
 	}
 	lnClient, err := ln.NewLNDclient(lndOptions)
 	if err != nil {
@@ -141,44 +141,44 @@ func main() {
 		return c.JSON(http.StatusOK, "pong")
 	})
 
-  e.Logger.Fatal(e.Start(":" + cfg.String("port")))
+	e.Logger.Fatal(e.Start(":" + cfg.String("port")))
 }
 
 func LoadConfig() *koanf.Koanf {
-  k := koanf.New(".")
+	k := koanf.New(".")
 
-  f := flag.NewFlagSet("LnMe", flag.ExitOnError)
+	f := flag.NewFlagSet("LnMe", flag.ExitOnError)
 	f.String("lnd.address", "localhost:10009", "The host and port of the LND gRPC server.")
 	f.String("lnd.macaroon_path", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the LND macaroon file.")
 	f.String("lnd.cert_path", "~/.lnd/tls.cert", "Path to the LND tls.cert file.")
-  f.Bool("disable_website", false, "Disable default embedded website.")
-  f.Bool("disable_cors", false, "Disable CORS headers.")
-  f.Float64("request_limit", 5, "Request limit per second.")
-  f.String("static_path", "", "Path to a static assets directory.")
-  f.String("port", "1323", "Port to bind on.")
-  var configPath string
+	f.Bool("disable_website", false, "Disable default embedded website.")
+	f.Bool("disable_cors", false, "Disable CORS headers.")
+	f.Float64("request_limit", 5, "Request limit per second.")
+	f.String("static_path", "", "Path to a static assets directory.")
+	f.String("port", "1323", "Port to bind on.")
+	var configPath string
 	f.StringVar(&configPath, "config", "config.toml", "Path to a .toml config file.")
-  f.Parse(os.Args[1:])
+	f.Parse(os.Args[1:])
 
-  // Load config from flags, including defaults
-  if err := k.Load(basicflag.Provider(f, "."), nil); err != nil {
+	// Load config from flags, including defaults
+	if err := k.Load(basicflag.Provider(f, "."), nil); err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-  // Load config from environment variables
-  k.Load(env.Provider("LNME_", ".", func(s string) string {
+	// Load config from environment variables
+	k.Load(env.Provider("LNME_", ".", func(s string) string {
 		return strings.Replace(strings.ToLower(
 			strings.TrimPrefix(s, "LNME_")), "_", ".", -1)
 	}), nil)
 
-  // Load config from file if available
-  if configPath != "" {
-    if _, err := os.Stat(configPath); err == nil {
-	    if err := k.Load(file.Provider(configPath), toml.Parser()); err != nil {
-		    log.Fatalf("Error loading config file: %v", err)
-      }
-	  }
-  }
+	// Load config from file if available
+	if configPath != "" {
+		if _, err := os.Stat(configPath); err == nil {
+			if err := k.Load(file.Provider(configPath), toml.Parser()); err != nil {
+				log.Fatalf("Error loading config file: %v", err)
+			}
+		}
+	}
 
-  return k
+	return k
 }
