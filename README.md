@@ -28,10 +28,10 @@ LnMe can easily run next to LND on the same system.
 
 ### Build from source
 
-1. $ git clone https://github.com/bumi/lnme.git && cd lnme
-2. $ go install
-3. $ rice embed-go && go build
-4. $ ./lnme
+1. `$ git clone https://github.com/bumi/lnme.git && cd lnme`
+2. `$ go install`
+3. `$ rice embed-go && go build`
+4. `$ ./lnme`
 
 ### Configuration
 
