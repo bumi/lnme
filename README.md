@@ -85,6 +85,15 @@ All environment variables must be prefixed by `LNME_` use `_` instead of `-`
 
 ### Deployment
 
+It is the easiest to run LnMe on the same node as LND. But you can run it anywhere as long as your LND node is accessible.
+
+#### Heroku 
+One click deployment with Heroku:
+
+[![Deploy on Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bumi/lnme)
+
+#### Notes
+
 To run LnMe as systemd service have a look at the [systemd service example config](https://github.com/bumi/lnme/blob/master/examples/lnme.service)
 
 I am running LnMe behind a reverse proxy using [caddy](https://caddyserver.com/) which comes with [fully-managed HTTPS](https://caddyserver.com/docs/quick-starts/https) via [letsencrypt](https://letsencrypt.org/).
