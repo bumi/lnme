@@ -1,0 +1,26 @@
+{
+  "name": "lnme",
+  "description": "LnMe - your friendly ⚡ payment page",
+  "repository": "https://github.com/bumi/lnme",
+  "logo": "https://bitcoin.org/img/icons/logotop.svg",
+  "keywords": ["payments", "lightning", "bitcoin"],
+  "env": {
+    "LNME_LND_ADDRESS": {
+      "description": "LND Address (e.g. 42.42.21.21:10009)",
+      "value": ""
+    },
+    "LNME_LND_MACAROON": {
+      "description": "LND macaroon as HEX",
+      "value": ""
+    },
+    "LNME_LND_CERT": {
+      "description": "LND TLS cert as HEX",
+      "value": ""
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-go"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+// +heroku goVersion 1.15
 module github.com/bumi/lnme
 
 go 1.15
