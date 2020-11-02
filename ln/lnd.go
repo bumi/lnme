@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"crypto/x509"
+  "net"
 
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/macaroons"
@@ -15,6 +16,8 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+
+  "github.com/cretz/bine/tor"
 )
 
 var stdOutLogger = log.New(os.Stdout, "", log.LstdFlags)
@@ -51,6 +54,7 @@ func (c LNDclient) AddInvoice(value int64, memo string) (Invoice, error) {
 		Memo:  memo,
 		Value: value,
 	}
+
 	res, err := c.lndClient.AddInvoice(c.ctx, &invoice)
 	if err != nil {
 		return result, err
@@ -107,6 +111,16 @@ func (c LNDclient) GetInvoice(paymentHashStr string) (Invoice, error) {
 func NewLNDclient(lndOptions LNDoptions) (LNDclient, error) {
 	result := LNDclient{}
 
+  // Start Tor
+	t, err := tor.Start(nil, nil)
+	if err != nil {
+    return result, err
+	}
+  dialer, err := t.Dialer(context.Background(), nil)
+	if err != nil {
+		return result, err
+	}
+
   // Get credentials either from a hex string or a file
   var creds credentials.TransportCredentials
   // if a hex string is provided
@@ -156,7 +170,11 @@ func NewLNDclient(lndOptions LNDoptions) (LNDclient, error) {
 	macCred := macaroons.NewMacaroonCredential(mac)
 	opts = append(opts, grpc.WithPerRPCCredentials(macCred))
 
-	conn, err := grpc.Dial(lndOptions.Address, opts...)
+  opts = append(opts, grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+			return dialer.DialContext(ctx, "tcp", addr)
+  }))
+
+  conn, err := grpc.Dial(lndOptions.Address, opts...)
 	if err != nil {
 		return result, err
 	}
