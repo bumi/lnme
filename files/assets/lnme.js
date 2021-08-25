@@ -57,10 +57,31 @@ class LnMe {
     } else {
       this.baseURL = `${document.location.protocol}//${document.location.host}`;
     }
+    if (options.watchPaymentUrl) {
+      this.watchPaymentUrl = options.watchPaymentUrl.bind(this);
+    }
+    if (options.createInvoiceUrl) {
+      this.createInvoiceUrl = options.createInvoiceUrl.bind(this);
+    }
+    if (options.newAddressUrl) {
+      this.newAddressUrl = options.newAddressUrl.bind(this);
+    }
     this.value = parseInt(options.value || 0);
     this.memo = options.memo || '';
     this.target = options.target;
     this.loadStylesheet(); // load it early that styles are ready when the popup is opened
+  }
+
+  watchPaymentUrl() {
+    return `${this.baseURL}/v1/invoice/${this.invoice.payment_hash}`;
+  }
+
+  createInvoiceUrl() {
+    return `${this.baseURL}/v1/invoices`;
+  }
+
+  newAddressUrl() {
+    return `${this.baseURL}/v1/newaddress`;
   }
 
   loadStylesheet() {
@@ -81,7 +102,7 @@ class LnMe {
 
     return new Promise((resolve, reject) => {
       this.paymentWatcher = window.setInterval(() => {
-        this._fetch(`${this.baseURL}/v1/invoice/${this.invoice.payment_hash}`)
+        this._fetch(this.watchPaymentUrl())
           .then((invoice) => {
             if (invoice.settled) {
               this.invoice.settled = true;
@@ -147,7 +168,7 @@ class LnMe {
       body: JSON.stringify({ memo: this.memo, value: this.value })
     };
     return this._fetch(
-      `${this.baseURL}/v1/invoices`,
+      this.createInvoiceUrl(),
       args
       ).then((invoice) => {
         this.invoice = invoice;
@@ -161,7 +182,7 @@ class LnMe {
       mode: 'cors',
       header: { 'Content-Type': 'application/json' }
     };
-    return this._fetch(`${this.baseURL}/v1/newaddress`, args)
+    return this._fetch(this.newAddressUrl(), args)
       .then(address => {
         this.address = address;
         return address;
