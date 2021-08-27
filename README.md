@@ -4,10 +4,10 @@ LnMe is a personal Bitcoin Lightning payment website and payment widget.
 
 ![demo](./lnme-demo.gif)
 
-It is a small service written in Go that connects to a [lnd node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md) and exposes a simple HTTP JSON API to create and monitor invoices. 
+It is a small service written in Go that connects to a [lnd node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md) and exposes a simple HTTP JSON API to create and monitor invoices.
 It comes with a configurable personal payment website and offers a JavaScript widget to integrate in existing websites.
 
-If [webln](https://github.com/wbobeirne/webln) is available the widget automatically use webln to request the payment; 
+If [webln](https://github.com/wbobeirne/webln) is available the widget automatically use webln to request the payment;
 otherwise an overlay will be shown with the payment request and a QR code.
 
 ## Motivation
@@ -19,7 +19,7 @@ BTCPay Server is too big and hard to run for that and I do not need most of its 
 
 ## Installation
 
-LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required. 
+LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required.
 LnMe can easily run next to LND on the same system.
 
 1. Download the latest [release](https://github.com/bumi/lnme/releases)
@@ -85,11 +85,16 @@ All environment variables must be prefixed by `LNME_` use `_` instead of `-`
     $ LNME_LND_ADDRESS=127.0.0.1:10005 lnme
 
 
+### TOR
+
+LnMe can connect to your lightning node through [Tor](https://www.torproject.org/). You need to have Tor installed on your system and then simply provide your LND `.onion` address (don't forget to specify the port).
+
+
 ### Deployment
 
 It is the easiest to run LnMe on the same node as LND. But you can run it anywhere as long as your LND node is accessible.
 
-#### Heroku 
+#### Heroku
 One click deployment with Heroku:
 
 [![Deploy on Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bumi/lnme)
