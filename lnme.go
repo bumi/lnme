@@ -2,7 +2,12 @@ package main
 
 import (
 	"flag"
-	"github.com/GeertJohan/go.rice"
+	"log"
+	"net/http"
+	"os"
+	"strings"
+
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/bumi/lnme/ln"
 	"github.com/didip/tollbooth/v6"
 	"github.com/didip/tollbooth/v6/limiter"
@@ -13,10 +18,6 @@ import (
 	"github.com/knadh/koanf/providers/file"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"log"
-	"net/http"
-	"os"
-	"strings"
 )
 
 // Middleware for request limited to prevent too many requests
@@ -124,9 +125,9 @@ func main() {
 	})
 
 	// Check invoice status
-	e.GET("/v1/invoice/:invoiceId", func(c echo.Context) error {
-		invoiceId := c.Param("invoiceId")
-		invoice, err := lnClient.GetInvoice(invoiceId)
+	e.GET("/v1/invoice/:paymentHash", func(c echo.Context) error {
+		paymentHash := c.Param("paymentHash")
+		invoice, err := lnClient.GetInvoice(paymentHash)
 
 		if err != nil {
 			stdOutLogger.Printf("Error looking up invoice: %s", err)
@@ -141,10 +142,10 @@ func main() {
 		return c.JSON(http.StatusOK, "pong")
 	})
 
-  port := cfg.String("port")
-  if os.Getenv("PORT") != "" {
-    port = os.Getenv("PORT")
-  }
+	port := cfg.String("port")
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	}
 	e.Logger.Fatal(e.Start(":" + port))
 }
 
