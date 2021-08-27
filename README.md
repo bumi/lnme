@@ -84,6 +84,16 @@ All environment variables must be prefixed by `LNME_` use `_` instead of `-`
 
     $ LNME_LND_ADDRESS=127.0.0.1:10005 lnme
 
+### LND Permissions
+
+LnMe needs the following LND permissions:
+
+* Read/Write permission for invoices
+* Write permission for onchain address (if you want to use the onchain option)
+
+Use the LND [macaroon bakery](http://macaroon-bakery.freedomnode.com/) to create a new macaroon for LnMe.
+
+To get the HEX versions of the files use `xxd -ps -u -c 100000` e.g. `cat invoice.macaroon | xxd -ps -u -c 100000`
 
 ### Deployment
 
@@ -91,6 +101,8 @@ It is the easiest to run LnMe on the same node as LND. But you can run it anywhe
 
 #### Heroku 
 One click deployment with Heroku:
+
+You will need your LND address, the LND tls certificate (HEX) and the macaroon (HEX). 
 
 [![Deploy on Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bumi/lnme)
 
