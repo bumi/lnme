@@ -2,6 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
+
+    <meta property="og:site_name" content="">
+    <meta property="og:description" content="">
+
+    <meta property="og:image" content="/lnme/zap.svg">
+
     <title>⚡ Send me some Sats</title>
     <style>
       html {
@@ -111,7 +117,7 @@
       <div class="form" id="form">
         <p>
           Send me<br>
-          <input type="number" placeholder="10000" class="amount" id="amount" autocomplete="off" min="100"> Sats
+          <input type="number" placeholder="10000" class="amount" id="amount" autofocus="true" autocomplete="off" min="100"> Sats
           <br>
           for
           <br>
@@ -146,6 +152,14 @@
 
     <script src="/lnme/lnme.js" id="lnme-script"></script>
     <script>
+      var siteName = document.querySelector('head > meta[property="og:site_name"]');
+      if (siteName && !siteName.content) {
+        siteName.content = window.location.host;
+      }
+      var siteDescription = document.querySelector('head > meta[property="og:description"]');
+      if (siteDescription && !siteDescription.content) {
+        siteDescription.content = "Sats for " + window.location.host;
+      }
       document.getElementById("get-new-address").addEventListener('click', function(e) {
         e.preventDefault();
         var lnme = new LnMe({});
