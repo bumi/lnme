@@ -33,6 +33,8 @@ LnMe can easily run next to LND on the same system.
 3. `$ rice embed-go && go build`
 4. `$ ./lnme`
 
+Note: You must have [go.rice installed](https://github.com/GeertJohan/go.rice#installation)
+
 ### Configuration
 
 #### LND configuration
@@ -174,7 +176,7 @@ Use `go run` to ron the service locally:
 
 ## Build
 
-LnMe uses [go.rice](https://github.com/GeertJohan/go.rice) to embed assets (HTML, JS, and CSS files). run `rice embed-go`
+LnMe uses [go.rice](https://github.com/GeertJohan/go.rice) to embed assets (HTML, JS, and CSS files). run `rice embed-go` (needs to be [installed](https://github.com/GeertJohan/go.rice#installation))
 
     $ rice embed-go
     $ go build
