@@ -4,23 +4,17 @@ LnMe is a personal Bitcoin Lightning payment website and payment widget.
 
 ![demo](./lnme-demo.gif)
 
-It is a small service written in Go that connects to a [lnd node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md) and exposes a simple HTTP JSON API to create and monitor invoices. 
-It comes with a configurable personal payment website and offers a JavaScript widget to integrate in existing websites.
+**See it in action: [ln.michaelbumann.com](https://ln.michaelbumann.com/)**
 
-If [webln](https://github.com/wbobeirne/webln) is available the widget automatically use webln to request the payment; 
-otherwise an overlay will be shown with the payment request and a QR code.
+LnMe focusses on simplicity and ease of deployment. It connects to an existing lightning node and provides a configurable personal payment page and offers a JavaScript widget to integrate into existing websites. 
 
-## Motivation
-
-I wanted a simple way for people to send Lightning payments using my own lightning node.
-
-BTCPay Server is too big and hard to run for that and I do not need most of its features.
+LnMe is one [simple executable](https://github.com/bumi/lnme/releases) file that can be deployed anywhere with no dependencies. (on your own node or for example with [one click on Heroku](#heroku))
 
 
 ## Installation
 
 LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required. 
-LnMe can easily run next to LND on the same system.
+LnMe can easily run next to LND on the same system or any other hosting provider.
 
 1. Download the latest [release](https://github.com/bumi/lnme/releases)
 2. Run `lnme`
@@ -181,6 +175,11 @@ lnme.watchPayment().then(invoice => {
 });
 
 ```
+
+## Motivation
+
+I wanted a simple way for people to send Lightning payments using my own lightning node.
+BTCPay Server is too big and hard to run for that and I do not need most of its features.
 
 ## Development
 
