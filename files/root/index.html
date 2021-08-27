@@ -163,10 +163,14 @@
       }
       document.getElementById('send-button').addEventListener('click', function(e) {
         e.preventDefault();
-        document.getElementById('loader').style.display = 'block';
-
         var amountElement = document.getElementById('amount');
         var memoElement = document.getElementById('memo');
+        if (amountElement.value == "") {
+          return;
+        }
+
+        document.getElementById('loader').style.display = 'block';
+
 
         e.target.setAttribute('disabled', true);
         amountElement.setAttribute('disabled', true);
