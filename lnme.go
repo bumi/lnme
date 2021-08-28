@@ -1,14 +1,19 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/bumi/lnme/ln"
+	"github.com/bumi/lnme/lnurl"
 	"github.com/didip/tollbooth/v6"
 	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/knadh/koanf"
@@ -137,6 +142,45 @@ func main() {
 		return c.JSON(http.StatusOK, invoice)
 	})
 
+	if !cfg.Bool("disable-ln-address") {
+		e.GET("/.well-known/lnurlp/:name", func(c echo.Context) error {
+			name := c.Param("name")
+			lightningAddress := name + "@" + c.Request().Host
+			lnurlMetadata := "[\"text/identifier\", \"" + lightningAddress + "\"], [\"text/plain\", \"Sats for " + lightningAddress + "\"]"
+
+			if amount := c.QueryParam("amount"); amount == "" {
+				lnurlPayResponse1 := lnurl.LNURLPayResponse1{
+					LNURLResponse:   lnurl.LNURLResponse{Status: "OK"},
+					Callback:        fmt.Sprintf("%s://%s%s", c.Scheme(), c.Request().Host, c.Request().URL.Path),
+					MinSendable:     1000,
+					MaxSendable:     100000000,
+					EncodedMetadata: lnurlMetadata,
+					CommentAllowed:  0,
+					Tag:             "payRequest",
+				}
+				return c.JSON(http.StatusOK, lnurlPayResponse1)
+			} else {
+				stdOutLogger.Printf("New LightningAddress request amount: %s", amount)
+				msats, err := strconv.ParseInt(amount, 10, 64)
+				if err != nil || msats < 1000 {
+					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Invalid Amount"})
+				}
+				sats := msats / 1000 // we need sats
+				metadataHash := sha256.Sum256([]byte(lnurlMetadata))
+				memo := hex.EncodeToString(metadataHash[:])
+				invoice, err := lnClient.AddInvoice(sats, memo)
+				lnurlPayResponse2 := lnurl.LNURLPayResponse2{
+					LNURLResponse: lnurl.LNURLResponse{Status: "OK"},
+					PR:            invoice.PaymentRequest,
+					Routes:        make([][]lnurl.RouteInfo, 0),
+					Disposable:    false,
+					SuccessAction: &lnurl.SuccessAction{Tag: "message", Message: "Thanks, payment received!"},
+				}
+				return c.JSON(http.StatusOK, lnurlPayResponse2)
+			}
+		})
+	}
+
 	// Debug test endpoint
 	e.GET("/ping", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "pong")
@@ -157,6 +201,7 @@ func LoadConfig() *koanf.Koanf {
 	f.String("lnd-macaroon-path", "~/.lnd/data/chain/bitcoin/mainnet/invoice.macaroon", "Path to the LND macaroon file.")
 	f.String("lnd-cert-path", "~/.lnd/tls.cert", "Path to the LND tls.cert file.")
 	f.Bool("disable-website", false, "Disable default embedded website.")
+	f.Bool("disable-ln-address", false, "Disable Lightning Address handling")
 	f.Bool("disable-cors", false, "Disable CORS headers.")
 	f.Float64("request-limit", 5, "Request limit per second.")
 	f.String("static-path", "", "Path to a static assets directory.")
