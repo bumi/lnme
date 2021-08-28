@@ -146,7 +146,7 @@ func main() {
 		e.GET("/.well-known/lnurlp/:name", func(c echo.Context) error {
 			name := c.Param("name")
 			lightningAddress := name + "@" + c.Request().Host
-			lnurlMetadata := "[\"text/identifier\", \"" + lightningAddress + "\"], [\"text/plain\", \"Sats for " + lightningAddress + "\"]"
+			lnurlMetadata := "[[\"text/identifier\", \"" + lightningAddress + "\"], [\"text/plain\", \"Sats for " + lightningAddress + "\"]]"
 
 			if amount := c.QueryParam("amount"); amount == "" {
 				lnurlPayResponse1 := lnurl.LNURLPayResponse1{
