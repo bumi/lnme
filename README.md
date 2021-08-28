@@ -4,23 +4,17 @@ LnMe is a personal Bitcoin Lightning payment website and payment widget.
 
 ![demo](./lnme-demo.gif)
 
-It is a small service written in Go that connects to a [lnd node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md) and exposes a simple HTTP JSON API to create and monitor invoices.
-It comes with a configurable personal payment website and offers a JavaScript widget to integrate in existing websites.
+**See it in action: [ln.michaelbumann.com](https://ln.michaelbumann.com/)**
 
-If [webln](https://github.com/wbobeirne/webln) is available the widget automatically use webln to request the payment;
-otherwise an overlay will be shown with the payment request and a QR code.
+LnMe focusses on simplicity and ease of deployment. It connects to an existing lightning node and provides a configurable personal payment page and offers a JavaScript widget to integrate into existing websites.
 
-## Motivation
-
-I wanted a simple way for people to send Lightning payments using my own lightning node.
-
-BTCPay Server is too big and hard to run for that and I do not need most of its features.
+LnMe is one [simple executable](https://github.com/bumi/lnme/releases) file that can be deployed anywhere with no dependencies. (on your own node or for example with [one click on Heroku](#heroku))
 
 
 ## Installation
 
 LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required.
-LnMe can easily run next to LND on the same system.
+LnMe can easily run next to LND on the same system or any other hosting provider.
 
 1. Download the latest [release](https://github.com/bumi/lnme/releases)
 2. Run `lnme`
@@ -85,6 +79,16 @@ All environment variables must be prefixed by `LNME_` use `_` instead of `-`
 
     $ LNME_LND_ADDRESS=127.0.0.1:10005 lnme
 
+### LND Permissions
+
+LnMe needs the following LND permissions:
+
+* Read/Write permission for invoices
+* Write permission for onchain address (if you want to use the onchain option)
+
+Use the LND [macaroon bakery](http://macaroon-bakery.freedomnode.com/) to create a new macaroon for LnMe.
+
+To get the HEX versions of the files use `xxd -ps -u -c 100000` e.g. `cat invoice.macaroon | xxd -ps -u -c 100000`
 
 ### Deployment
 
@@ -93,7 +97,11 @@ It is the easiest to run LnMe on the same node as LND. But you can run it anywhe
 #### Heroku
 One click deployment with Heroku:
 
+You will need your LND address, the LND tls certificate (HEX) and the macaroon (HEX).
+
 [![Deploy on Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bumi/lnme)
+
+Here is a [Video Demo of the Heroku deployment](https://www.youtube.com/watch?v=hSFXhnLp_Rc)
 
 #### Notes
 
@@ -178,6 +186,11 @@ lnme.watchPayment().then(invoice => {
 });
 
 ```
+
+## Motivation
+
+I wanted a simple way for people to send Lightning payments using my own lightning node.
+BTCPay Server is too big and hard to run for that and I do not need most of its features.
 
 ## Development
 
