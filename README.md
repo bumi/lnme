@@ -1,19 +1,20 @@
 # LnMe - your friendly ⚡ payment page
 
-LnMe is a personal Bitcoin Lightning payment website and payment widget.
+LnMe is a personal Bitcoin Lightning payment page/widget and self-hosted [Lightning Address](https://lightningaddress.com/) server.
+
 
 ![demo](./lnme-demo.gif)
 
-**See it in action: [ln.michaelbumann.com](https://ln.michaelbumann.com/)**
+**See it in action: [ln.michaelbumann.com](https://ln.michaelbumann.com/) - my lightning address: bumi@ln.michaelbumann.com**
 
-LnMe focusses on simplicity and ease of deployment. It connects to an existing lightning node and provides a configurable personal payment page and offers a JavaScript widget to integrate into existing websites. 
+LnMe focusses on simplicity and ease of deployment. It connects to an existing lightning node (currently LND is supported).
 
 LnMe is one [simple executable](https://github.com/bumi/lnme/releases) file that can be deployed anywhere with no dependencies. (on your own node or for example with [one click on Heroku](#heroku))
 
 
 ## Installation
 
-LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required. 
+LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required.
 LnMe can easily run next to LND on the same system or any other hosting provider.
 
 1. Download the latest [release](https://github.com/bumi/lnme/releases)
@@ -49,6 +50,7 @@ Instead of the path to the macaroon and cert files you can also provide the hex 
 * `static-path`: Path to a folder that you want to serve with LnMe (e.g. /home/bitcoin/lnme/website). Use this if you want to customize your ⚡website. default: disabled
 * `disable-website`: Disable the default LnMe website. Disable the website if you only want to embed the LnMe widget on your existing website.
 * `disable-cors`: Disable CORS headers. (default: false)
+* `disable-ln-address`: Disable [Lightning Address](https://lightningaddress.com/) handling.
 * `port`: Port to listen on. (default: 1323)
 * `request-limit`: Limit the allowed requests per second. (default: 5)
 
@@ -93,10 +95,10 @@ To get the HEX versions of the files use `xxd -ps -u -c 100000` e.g. `cat invoic
 
 It is the easiest to run LnMe on the same node as LND. But you can run it anywhere as long as your LND node is accessible.
 
-#### Heroku 
+#### Heroku
 One click deployment with Heroku:
 
-You will need your LND address, the LND tls certificate (HEX) and the macaroon (HEX). 
+You will need your LND address, the LND tls certificate (HEX) and the macaroon (HEX).
 
 [![Deploy on Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bumi/lnme)
 
@@ -115,6 +117,16 @@ lnme.michaelbumann.com {
 }
 ```
 `$ caddy  --config /etc/caddy/Caddyfile`
+
+
+### Lightning Address
+
+The Lightning Address is an Internet Identifier that allows anyone to send you Bitcoin over the Lightning Network.
+Lightning Address builds on [LNURL-pay](https://github.com/fiatjaf/lnurl-rfc/blob/luds/06.md) LnMe handles the necessary requests for you.
+
+For more information check out the website: [lightningaddress.com](https://lightningaddress.com/)
+
+Your Lightning Address: `{anything}@{your domain}`
 
 
 ### Customize your ⚡ website
