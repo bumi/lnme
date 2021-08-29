@@ -89,7 +89,7 @@ LnMe needs the following LND permissions:
 
 Use the LND [macaroon bakery](http://macaroon-bakery.freedomnode.com/) to create a new macaroon for LnMe.
 
-To get the HEX versions of the files use `xxd -ps -u -c 100000` e.g. `cat invoice.macaroon | xxd -ps -u -c 100000`
+To get the HEX versions of the files use `xxd -plain` e.g. `xxd -plain invoice.macaroon | tr -d '\n'`
 
 ### Deployment
 
