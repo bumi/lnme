@@ -11,11 +11,21 @@ LnMe focusses on simplicity and ease of deployment. It connects to an existing l
 
 LnMe is one [simple executable](https://github.com/bumi/lnme/releases) file that can be deployed anywhere with no dependencies. (on your own node or for example with [one click on Heroku](#heroku))
 
+## Features
+
+- [x] Embeded payment page - customizable (see demo)
+- [x] [Lightning Address](https://lightningaddress.com/) support
+- [x] WebLN integration - if [WebLN](https://webln.dev/) is not available a QRcode and the invoice will be shown
+- [x] [JavaScript widget](#javascript-widget-integration) for existing websites
+- [x] [Invoice API](https://github.com/bumi/lnme/wiki/API) - simple REST API to create LN invoices from existing JS code
+- [ ] [LNURL-pay](https://github.com/fiatjaf/lnurl-rfc/blob/luds/06.md) support
 
 ## Installation
 
 LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required.
 LnMe can easily run next to LND on the same system or any other hosting provider.
+
+There are no other dependencies. Simply download the binary and run it! 
 
 1. Download the latest [release](https://github.com/bumi/lnme/releases)
 2. Run `lnme`
