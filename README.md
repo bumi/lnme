@@ -101,11 +101,11 @@ Use the LND [macaroon bakery](http://macaroon-bakery.freedomnode.com/) to create
 
 To get the HEX versions of the files use `xxd -plain` e.g. `xxd -plain invoice.macaroon | tr -d '\n'`
 
-### Deployment
+## Deployment
 
-It is the easiest to run LnMe on the same node as LND. But you can run it anywhere as long as your LND node is accessible.
+It is the easiest to run LnMe on the same node as LND. But you can run it anywhere as long as your LND node is accessible. Simply run the binary and make sure the PORT is accessible.
 
-#### Heroku
+### Heroku
 One click deployment with Heroku:
 
 You will need your LND address, the LND tls certificate (HEX) and the macaroon (HEX).
@@ -114,7 +114,7 @@ You will need your LND address, the LND tls certificate (HEX) and the macaroon (
 
 Here is a [Video Demo of the Heroku deployment](https://www.youtube.com/watch?v=hSFXhnLp_Rc)
 
-#### Deployment Notes
+### Deployment Notes
 
 To run LnMe as systemd service have a look at the [systemd service example config](https://github.com/bumi/lnme/blob/master/examples/lnme.service)
 
@@ -128,6 +128,8 @@ lnme.michaelbumann.com {
 ```
 `$ caddy  --config /etc/caddy/Caddyfile`
 
+
+## Feature Usage
 
 ### Lightning Address
 
