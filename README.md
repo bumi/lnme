@@ -114,7 +114,7 @@ You will need your LND address, the LND tls certificate (HEX) and the macaroon (
 
 Here is a [Video Demo of the Heroku deployment](https://www.youtube.com/watch?v=hSFXhnLp_Rc)
 
-#### Notes
+#### Deployment Notes
 
 To run LnMe as systemd service have a look at the [systemd service example config](https://github.com/bumi/lnme/blob/master/examples/lnme.service)
 
