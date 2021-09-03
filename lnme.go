@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/sha256"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"log"
@@ -110,7 +109,7 @@ func main() {
 			return c.JSON(http.StatusBadRequest, "Bad request")
 		}
 
-		invoice, err := lnClient.AddInvoice(i.Value, i.Memo)
+		invoice, err := lnClient.AddInvoice(i.Value, i.Memo, nil)
 		if err != nil {
 			stdOutLogger.Printf("Error creating invoice: %s", err)
 			return c.JSON(http.StatusInternalServerError, "Error adding invoice")
@@ -167,8 +166,7 @@ func main() {
 				}
 				sats := msats / 1000 // we need sats
 				metadataHash := sha256.Sum256([]byte(lnurlMetadata))
-				memo := hex.EncodeToString(metadataHash[:])
-				invoice, err := lnClient.AddInvoice(sats, memo)
+				invoice, err := lnClient.AddInvoice(sats, lightningAddress, metadataHash[:])
 				lnurlPayResponse2 := lnurl.LNURLPayResponse2{
 					LNURLResponse: lnurl.LNURLResponse{Status: "OK"},
 					PR:            invoice.PaymentRequest,

@@ -24,7 +24,7 @@ LnMe is one [simple executable](https://github.com/bumi/lnme/releases) file that
 LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required.
 LnMe can easily run next to LND on the same system or any other hosting provider.
 
-There are no other dependencies. Simply download the binary and run it! 
+There are no other dependencies. Simply download the binary and run it!
 
 1. Download the latest [release](https://github.com/bumi/lnme/releases)
 2. Run `lnme`
@@ -105,11 +105,11 @@ To get the HEX versions of the files use `xxd -plain` e.g. `xxd -plain invoice.m
 LnMe can connect to your lightning node through [Tor](https://www.torproject.org/). You need to have Tor installed on your system and then simply provide your LND `.onion` address (don't forget to specify the port).
 
 
-### Deployment
+## Deployment
 
-It is the easiest to run LnMe on the same node as LND. But you can run it anywhere as long as your LND node is accessible.
+It is the easiest to run LnMe on the same node as LND. But you can run it anywhere as long as your LND node is accessible. Simply run the binary and make sure the PORT is accessible.
 
-#### Heroku
+### Heroku
 One click deployment with Heroku:
 
 You will need your LND address, the LND tls certificate (HEX) and the macaroon (HEX).
@@ -118,7 +118,7 @@ You will need your LND address, the LND tls certificate (HEX) and the macaroon (
 
 Here is a [Video Demo of the Heroku deployment](https://www.youtube.com/watch?v=hSFXhnLp_Rc)
 
-#### Notes
+### Deployment Notes
 
 To run LnMe as systemd service have a look at the [systemd service example config](https://github.com/bumi/lnme/blob/master/examples/lnme.service)
 
@@ -132,6 +132,8 @@ lnme.michaelbumann.com {
 ```
 `$ caddy  --config /etc/caddy/Caddyfile`
 
+
+## Feature Usage
 
 ### Lightning Address
 
