@@ -2,7 +2,6 @@
 
 LnMe is a personal Bitcoin Lightning payment page/widget and self-hosted [Lightning Address](https://lightningaddress.com/) server.
 
-
 ![demo](./lnme-demo.gif)
 
 **See it in action: [ln.michaelbumann.com](https://ln.michaelbumann.com/) - my lightning address: bumi@ln.michaelbumann.com**
@@ -25,7 +24,7 @@ LnMe is one [simple executable](https://github.com/bumi/lnme/releases) file that
 LnMe connects to your [LND node](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md), so a running LND node is required.
 LnMe can easily run next to LND on the same system or any other hosting provider.
 
-There are no other dependencies. Simply download the binary and run it! 
+There are no other dependencies. Simply download the binary and run it!
 
 1. Download the latest [release](https://github.com/bumi/lnme/releases)
 2. Run `lnme`
@@ -100,6 +99,11 @@ LnMe needs the following LND permissions:
 Use the LND [macaroon bakery](http://macaroon-bakery.freedomnode.com/) to create a new macaroon for LnMe.
 
 To get the HEX versions of the files use `xxd -plain` e.g. `xxd -plain invoice.macaroon | tr -d '\n'`
+
+### TOR
+
+LnMe can connect to your lightning node through [Tor](https://www.torproject.org/). You need to have Tor installed on your system and then simply provide your LND `.onion` address (don't forget to specify the port).
+
 
 ## Deployment
 

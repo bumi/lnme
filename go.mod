@@ -7,6 +7,7 @@ go 1.15
 replace go.etcd.io/etcd => go.etcd.io/etcd v0.5.0-alpha.5.0.20201125193152-8a03d2e9614b
 require (
 	github.com/GeertJohan/go.rice v1.0.2
+	github.com/cretz/bine v0.2.0
 	github.com/didip/tollbooth/v6 v6.1.1
 	github.com/knadh/koanf v1.2.1
 	github.com/labstack/echo/v4 v4.5.0

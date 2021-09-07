@@ -7,12 +7,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
+	"strings"
 
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/macaroons"
 	"gopkg.in/macaroon.v2"
 
+	"github.com/cretz/bine/tor"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -131,6 +134,21 @@ func NewLNDclient(lndOptions LNDoptions) (LNDclient, error) {
 	}
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(creds),
+	}
+
+	if strings.Contains(lndOptions.Address, ".onion") {
+		// Start Tor
+		t, err := tor.Start(nil, nil)
+		if err != nil {
+			return result, err
+		}
+		torDialer, err := t.Dialer(context.Background(), nil)
+		if err != nil {
+			return result, err
+		}
+		opts = append(opts, grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+			return torDialer.DialContext(ctx, "tcp", addr)
+		}))
 	}
 
 	var macaroonData []byte
