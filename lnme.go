@@ -166,7 +166,7 @@ func main() {
 				}
 				sats := msats / 1000 // we need sats
 				metadataHash := sha256.Sum256([]byte(lnurlMetadata))
-				invoice, err := lnClient.AddInvoice(sats, lightningAddress, metadataHash[:])
+				invoice, err := lnClient.AddInvoice(sats, lnurlMetadata, metadataHash[:])
 				lnurlPayResponse2 := lnurl.LNURLPayResponse2{
 					LNURLResponse: lnurl.LNURLResponse{Status: "OK"},
 					PR:            invoice.PaymentRequest,
