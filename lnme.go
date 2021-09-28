@@ -188,7 +188,15 @@ func main() {
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}
-	e.Logger.Fatal(e.Start(":" + port))
+	listen := cfg.String("listen")
+	if os.Getenv("LISTEN") != "" {
+		listen = os.Getenv("LISTEN")
+	}
+	if strings.Contains(listen, ":") {
+		listen = fmt.Sprintf("[%s]", listen)
+	}
+
+	e.Logger.Fatal(e.Start(fmt.Sprintf("%s:%s", listen, port)))
 }
 
 func LoadConfig() *koanf.Koanf {
@@ -204,6 +212,7 @@ func LoadConfig() *koanf.Koanf {
 	f.Float64("request-limit", 5, "Request limit per second.")
 	f.String("static-path", "", "Path to a static assets directory.")
 	f.String("port", "1323", "Port to bind on.")
+	f.String("listen", "", "Address to bind on.")
 	var configPath string
 	f.StringVar(&configPath, "config", "config.toml", "Path to a .toml config file.")
 	f.Parse(os.Args[1:])
