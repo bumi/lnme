@@ -24,6 +24,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+const DEFAULT_LISTEN = ":1323"
+
 // Middleware for request limited to prevent too many requests
 // TODO: move to file
 func LimitMiddleware(lmt *limiter.Limiter) echo.MiddlewareFunc {
@@ -185,18 +187,24 @@ func main() {
 	})
 
 	port := cfg.String("port")
+	// Special case for PORT instead of LNME_PORT due to cloud-providers
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}
 	listen := cfg.String("listen")
-	if os.Getenv("LISTEN") != "" {
-		listen = os.Getenv("LISTEN")
+	if listen != "" && port != "" {
+		log.Fatalf("Port and listen options are mutually exclusive, please just use listen.")
 	}
-	if strings.Contains(listen, ":") {
-		listen = fmt.Sprintf("[%s]", listen)
+	if listen == "" {
+		if port != "" {
+			stdOutLogger.Printf("Please use listen instead of deprecated port setting.")
+			listen = fmt.Sprintf(":%s", port)
+		} else {
+			listen = DEFAULT_LISTEN
+		}
 	}
 
-	e.Logger.Fatal(e.Start(fmt.Sprintf("%s:%s", listen, port)))
+	e.Logger.Fatal(e.Start(listen))
 }
 
 func LoadConfig() *koanf.Koanf {
@@ -211,8 +219,8 @@ func LoadConfig() *koanf.Koanf {
 	f.Bool("disable-cors", false, "Disable CORS headers.")
 	f.Float64("request-limit", 5, "Request limit per second.")
 	f.String("static-path", "", "Path to a static assets directory.")
-	f.String("port", "1323", "Port to bind on.")
-	f.String("listen", "", "Address to bind on.")
+	f.String("port", "", "Port to bind on (deprecated - use listen).")
+	f.String("listen", "", fmt.Sprintf("Address to bind on. (default \"%s\")", DEFAULT_LISTEN))
 	var configPath string
 	f.StringVar(&configPath, "config", "config.toml", "Path to a .toml config file.")
 	f.Parse(os.Args[1:])
