@@ -114,6 +114,11 @@ One click deployment with Heroku:
 
 You will need your LND address, the LND tls certificate (HEX) and the macaroon (HEX).
 
+When getting the HEX of the TLS certificate, use `xxd -plain tls.cert | tr -d '\n'`. The TLS cert is located in the lnd directory:
+* ~/umbrel/lnd/tls.cert on Umbrel
+* /mnt/hdd/lnd/tls.cert on Raspiblitz
+* Can also be located in ~/.lnd
+
 [![Deploy on Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bumi/lnme)
 
 Here is a [Video Demo of the Heroku deployment](https://www.youtube.com/watch?v=hSFXhnLp_Rc)
