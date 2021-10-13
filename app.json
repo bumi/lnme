@@ -20,7 +20,9 @@
   },
   "buildpacks": [
     {
-      "url": "https://github.com/heroku/heroku-buildpack-go",
+      "url": "https://github.com/heroku/heroku-buildpack-go"
+    },
+    {
       "url": "https://github.com/iamashks/heroku-buildpack-tor-proxy.git"
     }
   ]
