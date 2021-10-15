@@ -124,7 +124,7 @@ When getting the HEX of the TLS certificate, use `xxd -plain tls.cert | tr -d '\
 Here is a [Video Demo of the Heroku deployment](https://www.youtube.com/watch?v=hSFXhnLp_Rc)
 
 In order to run Tor on Heroku, the Heroku deployment includes a non-official buildpack: https://github.com/iamashks/heroku-buildpack-tor-proxy
-This buildpack can be disabled and removed if not needed or desired, through the Settigns tab on the Heroku dashboard, or by editing app.json and removing the buildpack.
+This buildpack can be disabled and removed if not needed or desired, through the Settings tab on the Heroku dashboard, or by editing app.json and removing the buildpack.
 
 Lastly, using the Heroku deployment, you can link the app to your own domain by following the directions here: https://help.heroku.com/MTG1BIA7/how-do-i-connect-a-domain-to-my-heroku-app
 
