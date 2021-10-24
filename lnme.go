@@ -144,7 +144,7 @@ func main() {
 	})
 
 	if !cfg.Bool("disable-ln-address") {
-		e.GET("/.well-known/lnurlp/:name", func(c echo.Context) error {
+		lnurlHandler := func(c echo.Context) error {
 			name := c.Param("name")
 			lightningAddress := name + "@" + c.Request().Host
 			lnurlMetadata := "[[\"text/identifier\", \"" + lightningAddress + "\"], [\"text/plain\", \"Sats for " + lightningAddress + "\"]]"
@@ -183,7 +183,9 @@ func main() {
 				}
 				return c.JSON(http.StatusOK, lnurlPayResponse2)
 			}
-		})
+		}
+		e.GET("/.well-known/lnurlp/:name", lnurlHandler)
+		e.GET("/lnurlp/:name", lnurlHandler)
 	}
 
 	// Debug test endpoint
