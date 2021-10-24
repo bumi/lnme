@@ -164,11 +164,16 @@ func main() {
 				stdOutLogger.Printf("New LightningAddress request amount: %s", amount)
 				msats, err := strconv.ParseInt(amount, 10, 64)
 				if err != nil || msats < 1000 {
+					stdOutLogger.Printf("Invalid amount: %s", amount)
 					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Invalid Amount"})
 				}
 				sats := msats / 1000 // we need sats
 				metadataHash := sha256.Sum256([]byte(lnurlMetadata))
 				invoice, err := lnClient.AddInvoice(sats, lightningAddress, metadataHash[:])
+				if err != nil {
+					stdOutLogger.Printf("Error creating invoice: %s", err)
+					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Server Error"})
+				}
 				lnurlPayResponse2 := lnurl.LNURLPayResponse2{
 					LNURLResponse: lnurl.LNURLResponse{Status: "OK"},
 					PR:            invoice.PaymentRequest,
