@@ -11,7 +11,7 @@ RUN go install
 
 RUN rice embed-go && go build
 
-FROM golang:1.17-alpine
+FROM alpine:3.14
 
 COPY --from=builder /app/lnme /lnme
 
