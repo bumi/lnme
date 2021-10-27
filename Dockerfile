@@ -15,4 +15,6 @@ FROM alpine:3.14
 
 COPY --from=builder /app/lnme /lnme
 
+EXPOSE 1323
+
 CMD ["/lnme"]
