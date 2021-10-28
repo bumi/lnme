@@ -19,7 +19,7 @@
     },
     "LNME_TOR_EXE_PATH": {
       "description": "Path to the tor executable",
-      "value": "~/tor/bin/tor"
+      "value": "/app/tor/bin/tor"
     }
   },
   "buildpacks": [
