@@ -37,6 +37,7 @@ type LNDoptions struct {
 	CertHex      string
 	MacaroonFile string
 	MacaroonHex  string
+	TorExePath   string // used when connecting through tor to LND
 }
 
 type LNDclient struct {
@@ -138,7 +139,7 @@ func NewLNDclient(lndOptions LNDoptions) (LNDclient, error) {
 
 	if strings.Contains(lndOptions.Address, ".onion") {
 		// Start Tor
-		t, err := tor.Start(nil, nil)
+		t, err := tor.Start(nil, &tor.StartConf{ExePath: lndOptions.TorExePath})
 		if err != nil {
 			return result, err
 		}
