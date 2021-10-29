@@ -109,15 +109,20 @@ LnMe can connect to your lightning node through [Tor](https://www.torproject.org
 
 It is the easiest to run LnMe on the same node as LND. But you can run it anywhere as long as your LND node is accessible. Simply run the binary and make sure the PORT is accessible.
 
-### Heroku
-One click deployment with Heroku:
+If you run LNMe on a different server you will need your LND address, the LND TLS certificate (HEX) and the macaroon (HEX). (see above)
 
-You will need your LND address, the LND tls certificate (HEX) and the macaroon (HEX).
+When getting the HEX of the LND files use `xxd -plain YOUR_FILE.cert | tr -d '\n'`. For example for the TLS certificate, use `xxd -plain tls.cert | tr -d '\n'`. 
 
-When getting the HEX of the TLS certificate, use `xxd -plain tls.cert | tr -d '\n'`. The TLS cert is located in the lnd directory:
+The TLS cert is located in the lnd directory:
 * ~/umbrel/lnd/tls.cert on Umbrel
 * /mnt/hdd/lnd/tls.cert on Raspiblitz
 * Can also be located in ~/.lnd
+
+You should find the macaroon files in the LND data dir (e.g. ~.lnd/data/chain/bitcoin/mainnet/) or see "LND Permissions" how to create a new one. 
+
+
+### Heroku
+One click deployment with Heroku:
 
 [![Deploy on Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bumi/lnme)
 
