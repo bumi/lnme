@@ -93,8 +93,8 @@ All environment variables must be prefixed by `LNME_` use `_` instead of `-`
 
 LnMe needs the following LND permissions:
 
-* Read/Write permission for invoices
-* Write permission for onchain address (if you want to use the onchain option)
+* Read/Write permission for `invoices`
+* Write permission for `address` (if you want to use the onchain option)
 
 Use the LND [macaroon bakery](http://macaroon-bakery.freedomnode.com/) to create a new macaroon for LnMe.
 
