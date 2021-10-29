@@ -16,6 +16,10 @@
     "LNME_LND_CERT": {
       "description": "LND TLS cert as HEX",
       "value": ""
+    },
+    "LNME_TOR_EXE_PATH": {
+      "description": "Path to the tor executable",
+      "value": "/app/tor/bin/tor"
     }
   },
   "buildpacks": [

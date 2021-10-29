@@ -94,6 +94,7 @@ func main() {
 		CertHex:      cfg.String("lnd-cert"),
 		MacaroonFile: cfg.String("lnd-macaroon-path"),
 		MacaroonHex:  cfg.String("lnd-macaroon"),
+		TorExePath:   cfg.String("tor-exe-path"),
 	}
 	lnClient, err := ln.NewLNDclient(lndOptions)
 	if err != nil {
@@ -228,6 +229,7 @@ func LoadConfig() *koanf.Koanf {
 	f.String("static-path", "", "Path to a static assets directory.")
 	f.String("port", "", "Port to bind on (deprecated - use listen).")
 	f.String("listen", "", fmt.Sprintf("Address to bind on. (default \"%s\")", DEFAULT_LISTEN))
+	f.String("tor-exe-path", "tor", "Path to the Tor executable. Used when connecting through Tor. (default: tor)")
 	var configPath string
 	f.StringVar(&configPath, "config", "config.toml", "Path to a .toml config file.")
 	f.Parse(os.Args[1:])
