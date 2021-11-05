@@ -146,14 +146,18 @@ func main() {
 
 	if !cfg.Bool("disable-ln-address") {
 		lnurlHandler := func(c echo.Context) error {
+			host := c.Request().Host
+			if c.Request().Header.Get(echo.HeaderXForwardedFor) != "" {
+				host = c.Request().Header.Get(echo.HeaderXForwardedFor)
+			}
 			name := c.Param("name")
-			lightningAddress := name + "@" + c.Request().Host
+			lightningAddress := name + "@" + host
 			lnurlMetadata := "[[\"text/identifier\", \"" + lightningAddress + "\"], [\"text/plain\", \"Sats for " + lightningAddress + "\"]]"
 
 			if amount := c.QueryParam("amount"); amount == "" {
 				lnurlPayResponse1 := lnurl.LNURLPayResponse1{
 					LNURLResponse:   lnurl.LNURLResponse{Status: "OK"},
-					Callback:        fmt.Sprintf("%s://%s%s", c.Scheme(), c.Request().Host, c.Request().URL.Path),
+					Callback:        fmt.Sprintf("%s://%s%s", c.Scheme(), host, c.Request().URL.Path),
 					MinSendable:     1000,
 					MaxSendable:     100000000,
 					EncodedMetadata: lnurlMetadata,
