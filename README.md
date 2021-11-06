@@ -39,6 +39,12 @@ There are no other dependencies. Simply download the binary and run it!
 
 Note: You must have [go.rice installed](https://github.com/GeertJohan/go.rice#installation)
 
+### Running in Docker
+
+LnMe is now available in docker too.
+You can start LnMe like this: `docker run -it --rm ghcr.io/bumi/lnme:master`
+A list of existing tags is available [here](https://github.com/bumi/lnme/pkgs/container/lnme).
+
 ### Configuration
 
 #### LND configuration
