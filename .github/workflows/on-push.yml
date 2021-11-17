@@ -1,0 +1,43 @@
+name: Build on push
+
+permissions:
+  packages: write
+
+on:
+    push:
+        branches:
+            - main
+            - master
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Set env variables
+        run: |
+          echo "BRANCH=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g')" >> $GITHUB_ENV
+          IMAGE_NAME="${GITHUB_REPOSITORY#*/}"
+          echo "IMAGE_NAME=${IMAGE_NAME//docker-/}" >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        id: qemu
+
+      - name: Setup Docker buildx action
+        uses: docker/setup-buildx-action@v1
+        id: buildx
+
+      - name: Run Docker buildx
+        run: |
+                docker buildx build \
+                --platform linux/amd64,linux/arm64 \
+                --tag ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$BRANCH \
+                --output "type=registry" ./
