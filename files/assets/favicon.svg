@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024px" height="1024px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>lnme-icon-no-padding</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#FFA500" offset="0%"></stop>
+            <stop stop-color="#FFE300" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#FFE300" offset="0%"></stop>
+            <stop stop-color="#FFA500" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="lnme-icon-no-padding" transform="translate(0.000000, -0.460904)">
+            <polygon id="Path1" fill="url(#linearGradient-1)" points="439.147203 0 192.83828 475.102188 823.013089 475.102188 909.205258 386.884293 491.070577 386.884293 737.132519 0.460904"></polygon>
+            <polygon id="Path2" fill="url(#linearGradient-2)" points="115.14578 615.666174 528.131075 615.666174 327.461698 1024 793.918502 509.464888 174.115801 509.464888"></polygon>
+        </g>
+    </g>
+</svg>

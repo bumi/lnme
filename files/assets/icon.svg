@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024px" height="1024px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>lnme-icon-rect</title>
+    <defs>
+        <linearGradient x1="0%" y1="64.5790537%" x2="100%" y2="64.5790537%" id="linearGradient-1">
+            <stop stop-color="#3D3393" offset="0%"></stop>
+            <stop stop-color="#2B76B9" offset="24.6013508%"></stop>
+            <stop stop-color="#2CACD1" offset="67.981896%"></stop>
+            <stop stop-color="#35EB93" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#FFA500" offset="0%"></stop>
+            <stop stop-color="#FFE300" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-3">
+            <stop stop-color="#FFE300" offset="0%"></stop>
+            <stop stop-color="#FFA500" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="lnme-icon-rect">
+            <rect id="Background" fill="url(#linearGradient-1)" x="0" y="0" width="1024" height="1024"></rect>
+            <polygon id="Path1" fill="url(#linearGradient-2)" points="456 91.539096 254.655336 479.91029 769.790288 479.91029 840.247879 407.796774 498.444643 407.796774 698.541282 95.539096"></polygon>
+            <polygon id="Path2" fill="url(#linearGradient-3)" points="191.14578 594.813998 528.739662 594.813998 364.70294 928.605547 746.006985 508 239.350688 508"></polygon>
+        </g>
+    </g>
+</svg>
