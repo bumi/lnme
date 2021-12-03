@@ -1,4 +1,5 @@
-# LnMe - your friendly ⚡ payment page
+<p align="center"><br/><br/><img src="https://raw.githubusercontent.com/bumi/lnme/master/icon/lnme-icon-rrect.svg" height="128" width="128" /><br/><br/></p>
+<h1 align="center">LnMe - your friendly payment page</h1><br/><br/>
 
 LnMe is a personal Bitcoin Lightning payment page/widget and self-hosted [Lightning Address](https://lightningaddress.com/) server.
 
