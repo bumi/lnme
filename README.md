@@ -18,7 +18,7 @@ LnMe is one [simple executable](https://github.com/bumi/lnme/releases) file that
 - [x] WebLN integration - if [WebLN](https://webln.dev/) is not available a QRcode and the invoice will be shown
 - [x] [JavaScript widget](#javascript-widget-integration) for existing websites
 - [x] [Invoice API](https://github.com/bumi/lnme/wiki/API) - simple REST API to create LN invoices from existing JS code
-- [ ] [LNURL-pay](https://github.com/fiatjaf/lnurl-rfc/blob/luds/06.md) support
+- [x] [LNURL-pay](https://github.com/fiatjaf/lnurl-rfc/blob/luds/06.md) support
 
 ## Installation
 
@@ -166,6 +166,12 @@ Lightning Address builds on [LNURL-pay](https://github.com/fiatjaf/lnurl-rfc/blo
 For more information check out the website: [lightningaddress.com](https://lightningaddress.com/)
 
 Your Lightning Address: `{anything}@{your domain}`
+
+### LNURL
+
+if you got the Lightning Address enabled you also get a LNURL-pay URL:
+
+https://`{your domain}/lnurlp/{anything}`
 
 
 ### Customize your ⚡ website
