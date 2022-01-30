@@ -35,10 +35,8 @@ There are no other dependencies. Simply download the binary and run it!
 
 1. `$ git clone https://github.com/bumi/lnme.git && cd lnme`
 2. `$ go install`
-3. `$ rice embed-go && go build`
+3. `$ go build`
 4. `$ ./lnme`
-
-Note: You must have [go.rice installed](https://github.com/GeertJohan/go.rice#installation)
 
 ### Running in Docker
 

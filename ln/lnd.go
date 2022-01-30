@@ -173,7 +173,10 @@ func NewLNDclient(lndOptions LNDoptions) (LNDclient, error) {
 	if err := mac.UnmarshalBinary(macaroonData); err != nil {
 		return result, err
 	}
-	macCred := macaroons.NewMacaroonCredential(mac)
+	macCred, err := macaroons.NewMacaroonCredential(mac)
+	if err != nil {
+		return result, err
+	}
 	opts = append(opts, grpc.WithPerRPCCredentials(macCred))
 
 	conn, err := grpc.Dial(lndOptions.Address, opts...)
