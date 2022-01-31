@@ -65,7 +65,7 @@ func main() {
 	} else if !cfg.Bool("disable-website") {
 		stdOutLogger.Print("Running embedded page")
 		e.GET("/", func(c echo.Context) error {
-			return c.HTML(200, string(indexPage))
+			return c.HTML(200, indexPage)
 		})
 	}
 	// Embed static files and serve those on /lnme (e.g. /lnme/lnme.js)
