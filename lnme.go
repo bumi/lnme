@@ -5,6 +5,7 @@ import (
 	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -68,8 +69,12 @@ func main() {
 			return c.HTML(200, indexPage)
 		})
 	}
+	assetSubdir, err := fs.Sub(embeddedAssets, "files/assets")
+	if err != nil {
+		log.Fatal(err)
+	}
 	// Embed static files and serve those on /lnme (e.g. /lnme/lnme.js)
-	assetHandler := http.FileServer(http.FS(embeddedAssets))
+	assetHandler := http.FileServer(http.FS(assetSubdir))
 	e.GET("/lnme/*", echo.WrapHandler(http.StripPrefix("/lnme/", assetHandler)))
 
 	// CORS settings
