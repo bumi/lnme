@@ -47,7 +47,7 @@ type Invoice struct {
 	Memo  string `json:"memo"`
 }
 
-//go:embed files/assets
+//go:embed files/assets/*
 var embeddedAssets embed.FS
 
 //go:embed files/root/index.html
