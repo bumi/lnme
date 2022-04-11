@@ -255,6 +255,10 @@ LnMe uses [go.rice](https://github.com/GeertJohan/go.rice) to embed assets (HTML
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/bumi/lnme
 
+## Support
+
+If you like this software and it is valuable for you, you can send sats to ⚡️bumi@getalby.com
+
 ## License
 
 Available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
