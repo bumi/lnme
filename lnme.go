@@ -2,15 +2,16 @@ package main
 
 import (
 	"crypto/sha256"
+	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/bumi/lnme/ln"
 	"github.com/bumi/lnme/lnurl"
 	"github.com/didip/tollbooth/v6"
@@ -47,6 +48,12 @@ type Invoice struct {
 	Memo  string `json:"memo"`
 }
 
+//go:embed files/assets/*
+var embeddedAssets embed.FS
+
+//go:embed files/root/index.html
+var indexPage string
+
 func main() {
 	cfg := LoadConfig()
 
@@ -57,19 +64,17 @@ func main() {
 		e.Static("/", cfg.String("static-path"))
 		// Serve default page
 	} else if !cfg.Bool("disable-website") {
-		rootBox := rice.MustFindBox("files/root")
-		indexPage, err := rootBox.String("index.html")
-		if err == nil {
-			stdOutLogger.Print("Running embedded page")
-			e.GET("/", func(c echo.Context) error {
-				return c.HTML(200, indexPage)
-			})
-		} else {
-			stdOutLogger.Printf("Failed to run embedded website: %s", err)
-		}
+		stdOutLogger.Print("Running embedded page")
+		e.GET("/", func(c echo.Context) error {
+			return c.HTML(200, indexPage)
+		})
+	}
+	assetSubdir, err := fs.Sub(embeddedAssets, "files/assets")
+	if err != nil {
+		log.Fatal(err)
 	}
 	// Embed static files and serve those on /lnme (e.g. /lnme/lnme.js)
-	assetHandler := http.FileServer(rice.MustFindBox("files/assets").HTTPBox())
+	assetHandler := http.FileServer(http.FS(assetSubdir))
 	e.GET("/lnme/*", echo.WrapHandler(http.StripPrefix("/lnme/", assetHandler)))
 
 	// CORS settings
