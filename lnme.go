@@ -152,9 +152,14 @@ func main() {
 	if !cfg.Bool("disable-ln-address") {
 		lnurlHandler := func(c echo.Context) error {
 			host := c.Request().Host
-			if c.Request().Header.Get(echo.HeaderXForwardedFor) != "" {
-				host = c.Request().Header.Get(echo.HeaderXForwardedFor)
+      proto := c.Scheme()
+      // TODO: support RFC7239 Forwarded header
+			if c.Request().Header.Get("X-Forwarded-Host") != "" {
+				host = c.Request().Header.Get("X-Forwarded-Host")
 			}
+      if c.Request().Header.Get("X-Forwarded-Proto") != "" {
+        proto = c.Request().Header.Get("X-Forwarded-Proto")
+      }
 			name := c.Param("name")
 			lightningAddress := name + "@" + host
 			lnurlMetadata := "[[\"text/identifier\", \"" + lightningAddress + "\"], [\"text/plain\", \"Sats for " + lightningAddress + "\"]]"
@@ -162,7 +167,7 @@ func main() {
 			if amount := c.QueryParam("amount"); amount == "" {
 				lnurlPayResponse1 := lnurl.LNURLPayResponse1{
 					LNURLResponse:   lnurl.LNURLResponse{Status: "OK"},
-					Callback:        fmt.Sprintf("%s://%s%s", c.Scheme(), host, c.Request().URL.Path),
+					Callback:        fmt.Sprintf("%s://%s%s", proto, host, c.Request().URL.Path),
 					MinSendable:     1000,
 					MaxSendable:     100000000,
 					EncodedMetadata: lnurlMetadata,
