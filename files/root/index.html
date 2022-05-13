@@ -8,7 +8,7 @@
 
     <meta property="og:image" content="/lnme/icon.svg">
 
-    <title>Send me some Sats</title>
+    <title>Send me some sats</title>
     <style>
       html {
         width: 100%;
@@ -118,7 +118,7 @@
       <div class="form" id="form">
         <p>
           Send me<br>
-          <input type="number" placeholder="10000" class="amount" id="amount" autofocus="true" autocomplete="off" min="100"> Sats
+          <input type="number" placeholder="10000" class="amount" id="amount" autofocus="true" autocomplete="off" min="100"> sats
           <br>
           for
           <br>
@@ -159,7 +159,7 @@
       }
       var siteDescription = document.querySelector('head > meta[property="og:description"]');
       if (siteDescription && !siteDescription.content) {
-        siteDescription.content = "Sats for " + window.location.host;
+        siteDescription.content = "sats for " + window.location.host;
       }
       document.getElementById("get-new-address").addEventListener('click', function(e) {
         e.preventDefault();
