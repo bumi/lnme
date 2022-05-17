@@ -171,6 +171,8 @@ if you got the Lightning Address enabled you also get a LNURL-pay URL:
 
 https://`{your domain}/lnurlp/{anything}`
 
+If you need an bech32 encoded version you can use this online tool: [https://lnurl.fiatjaf.com/codec/](https://lnurl.fiatjaf.com/codec/) 
+
 ### Customize your ⚡ website
 
 LnMe comes with a default website but you can easily configure and build your own using the the LnMe JavaScript widget or JSON API.
@@ -180,6 +182,13 @@ Take a look at the [embedded default website](https://github.com/bumi/lnme/blob/
 1. Create a new folder (e.g. /home/satoshi/my-ln-page)
 2. Create your index.html
 3. Run lnme: `lnme --static-path=/home/satoshi/my-ln-page
+
+### Usage with 21 Payment Widgets
+
+[widgets.twentyuno.net](https://widgets.twentyuno.net/) is a beautiful embeddable payment widget for any existing website.  
+You can use your LnMe instance with the widget by using your [LnMe LNURL](https://github.com/bumi/lnme#lnurl) with the widget. 
+
+Use your bech32 encoded [LNURL](https://github.com/bumi/lnme#lnurl) as `Receiver` in the [widget configuration](https://widgets.twentyuno.net/get-started)
 
 ### JavaScript Widget integration
 
