@@ -19,6 +19,7 @@ LnMe is one [simple executable](https://github.com/bumi/lnme/releases) file that
 - [x] [JavaScript widget](#javascript-widget-integration) for existing websites
 - [x] [Invoice API](https://github.com/bumi/lnme/wiki/API) - simple REST API to create LN invoices from existing JS code
 - [x] [LNURL-pay](https://github.com/fiatjaf/lnurl-rfc/blob/luds/06.md) support
+- [x] [LNURL-pay comment](https://github.com/fiatjaf/lnurl-rfc/blob/luds/12.md) support
 
 ## Installation
 
@@ -62,6 +63,7 @@ Instead of the path to the macaroon and cert files you can also provide the hex 
 #### Other configuration
 
 - `static-path`: Path to a folder that you want to serve with LnMe (e.g. /home/bitcoin/lnme/website). Use this if you want to customize your ⚡website. default: disabled
+- `lnurlp-comment-allowed`: Allowed length of LNURL-pay comments, maximum around [~2000 characters](https://stackoverflow.com/a/417184). (default: 210)
 - `disable-website`: Disable the default LnMe website. Disable the website if you only want to embed the LnMe widget on your existing website.
 - `disable-cors`: Disable CORS headers. (default: false)
 - `disable-ln-address`: Disable [Lightning Address](https://lightningaddress.com/) handling.

@@ -163,6 +163,7 @@ func main() {
 			name := c.Param("name")
 			lightningAddress := name + "@" + host
 			lnurlMetadata := "[[\"text/identifier\", \"" + lightningAddress + "\"], [\"text/plain\", \"Sats for " + lightningAddress + "\"]]"
+			lnurlpCommentAllowed := cfg.Int64("lnurlp-comment-allowed")
 
 			if amount := c.QueryParam("amount"); amount == "" {
 				lnurlPayResponse1 := lnurl.LNURLPayResponse1{
@@ -171,7 +172,7 @@ func main() {
 					MinSendable:     1000,
 					MaxSendable:     100000000,
 					EncodedMetadata: lnurlMetadata,
-					CommentAllowed:  0,
+					CommentAllowed:  lnurlpCommentAllowed,
 					Tag:             "payRequest",
 				}
 				return c.JSON(http.StatusOK, lnurlPayResponse1)
@@ -183,8 +184,13 @@ func main() {
 					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Invalid Amount"})
 				}
 				sats := msats / 1000 // we need sats
+				comment := c.QueryParam("comment")
+				if commentLength := int64(len(comment)); commentLength > lnurlpCommentAllowed {
+					stdOutLogger.Printf("Invalid comment length: %d", commentLength)
+					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Invalid comment length"})
+				}
 				metadataHash := sha256.Sum256([]byte(lnurlMetadata))
-				invoice, err := lnClient.AddInvoice(sats, lightningAddress, metadataHash[:])
+				invoice, err := lnClient.AddInvoice(sats, comment, metadataHash[:])
 				if err != nil {
 					stdOutLogger.Printf("Error creating invoice: %s", err)
 					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Server Error"})
@@ -238,6 +244,7 @@ func LoadConfig() *koanf.Koanf {
 	f.String("lnd-macaroon", "", "HEX string of LND macaroon file.")
 	f.String("lnd-cert-path", "~/.lnd/tls.cert", "Path to the LND tls.cert file.")
 	f.String("lnd-cert", "", "HEX string of LND tls cert file.")
+	f.Int64("lnurlp-comment-allowed", 210, "Allowed length of LNURL-pay comments.")
 	f.Bool("disable-website", false, "Disable default embedded website.")
 	f.Bool("disable-ln-address", false, "Disable Lightning Address handling")
 	f.Bool("disable-cors", false, "Disable CORS headers.")
