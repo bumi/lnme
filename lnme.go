@@ -117,7 +117,7 @@ func main() {
 			return c.JSON(http.StatusBadRequest, "Bad request")
 		}
 
-		invoice, err := lnClient.AddInvoice(i.Value, i.Memo, nil)
+		invoice, err := lnClient.AddInvoice(msats(i.Value), i.Memo, nil)
 		if err != nil {
 			stdOutLogger.Printf("Error creating invoice: %s", err)
 			return c.JSON(http.StatusInternalServerError, "Error adding invoice")
@@ -162,6 +162,8 @@ func main() {
 			}
 			name := c.Param("name")
 			lightningAddress := name + "@" + host
+			lnurlpMinSendable := msats(cfg.Int64("lnurlp-min-sendable"))
+			lnurlpMaxSendable := msats(cfg.Int64("lnurlp-max-sendable"))
 			lnurlMetadata := "[[\"text/identifier\", \"" + lightningAddress + "\"], [\"text/plain\", \"Sats for " + lightningAddress + "\"]]"
 			lnurlpCommentAllowed := cfg.Int64("lnurlp-comment-allowed")
 
@@ -169,8 +171,8 @@ func main() {
 				lnurlPayResponse1 := lnurl.LNURLPayResponse1{
 					LNURLResponse:   lnurl.LNURLResponse{Status: "OK"},
 					Callback:        fmt.Sprintf("%s://%s%s", proto, host, c.Request().URL.Path),
-					MinSendable:     1000,
-					MaxSendable:     100000000,
+					MinSendable:     lnurlpMinSendable,
+					MaxSendable:     lnurlpMaxSendable,
 					EncodedMetadata: lnurlMetadata,
 					CommentAllowed:  lnurlpCommentAllowed,
 					Tag:             "payRequest",
@@ -179,18 +181,17 @@ func main() {
 			} else {
 				stdOutLogger.Printf("New LightningAddress request amount: %s", amount)
 				msats, err := strconv.ParseInt(amount, 10, 64)
-				if err != nil || msats < 1000 {
+				if err != nil || msats < lnurlpMinSendable || msats > lnurlpMaxSendable {
 					stdOutLogger.Printf("Invalid amount: %s", amount)
 					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Invalid Amount"})
 				}
-				sats := msats / 1000 // we need sats
 				comment := c.QueryParam("comment")
 				if commentLength := int64(len(comment)); commentLength > lnurlpCommentAllowed {
 					stdOutLogger.Printf("Invalid comment length: %d", commentLength)
 					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Invalid comment length"})
 				}
 				metadataHash := sha256.Sum256([]byte(lnurlMetadata))
-				invoice, err := lnClient.AddInvoice(sats, comment, metadataHash[:])
+				invoice, err := lnClient.AddInvoice(msats, comment, metadataHash[:])
 				if err != nil {
 					stdOutLogger.Printf("Error creating invoice: %s", err)
 					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Server Error"})
@@ -235,6 +236,10 @@ func main() {
 	e.Logger.Fatal(e.Start(listen))
 }
 
+func msats(sats int64) int64 {
+	return sats * 1000
+}
+
 func LoadConfig() *koanf.Koanf {
 	k := koanf.New(".")
 
@@ -244,6 +249,8 @@ func LoadConfig() *koanf.Koanf {
 	f.String("lnd-macaroon", "", "HEX string of LND macaroon file.")
 	f.String("lnd-cert-path", "~/.lnd/tls.cert", "Path to the LND tls.cert file.")
 	f.String("lnd-cert", "", "HEX string of LND tls cert file.")
+	f.Int64("lnurlp-min-sendable", 1, "Min sendable amount in sats via LNURL-pay.")
+	f.Int64("lnurlp-max-sendable", 1000000, "Max sendable amount in sats via LNURL-pay.")
 	f.Int64("lnurlp-comment-allowed", 210, "Allowed length of LNURL-pay comments.")
 	f.Bool("disable-website", false, "Disable default embedded website.")
 	f.Bool("disable-ln-address", false, "Disable Lightning Address handling")
