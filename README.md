@@ -5,7 +5,7 @@ LnMe is a personal Bitcoin Lightning payment page/widget and self-hosted [Lightn
 
 ![demo](./lnme-demo.gif)
 
-**See it in action: [ln.michaelbumann.com](https://ln.michaelbumann.com/) - my lightning address: bumi@ln.michaelbumann.com**
+**See it in action: [ln.michaelbumann.com](http://ln.michaelbumann.com/) - my lightning address: bumi@ln.michaelbumann.com**
 
 LnMe focusses on simplicity and ease of deployment. It connects to an existing lightning node (currently LND is supported).
 
