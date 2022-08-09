@@ -66,6 +66,7 @@ Instead of the path to the macaroon and cert files you can also provide the hex 
 - `disable-cors`: Disable CORS headers. (default: false)
 - `disable-ln-address`: Disable [Lightning Address](https://lightningaddress.com/) handling.
 - `port`: Port to listen on. (default: 1323)
+- `listen`: IP and port to listen to. Supersedes `port`. (default: :1323).
 - `request-limit`: Limit the allowed requests per second. (default: 5)
 
 Depending on your deployment needs LnMe can be configured using the following options:
