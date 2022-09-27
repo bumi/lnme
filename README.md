@@ -19,6 +19,7 @@ LnMe is one [simple executable](https://github.com/bumi/lnme/releases) file that
 - [x] [JavaScript widget](#javascript-widget-integration) for existing websites
 - [x] [Invoice API](https://github.com/bumi/lnme/wiki/API) - simple REST API to create LN invoices from existing JS code
 - [x] [LNURL-pay](https://github.com/fiatjaf/lnurl-rfc/blob/luds/06.md) support
+- [x] [LNURL-pay comment](https://github.com/fiatjaf/lnurl-rfc/blob/luds/12.md) support
 
 ## Installation
 
@@ -62,10 +63,12 @@ Instead of the path to the macaroon and cert files you can also provide the hex 
 #### Other configuration
 
 - `static-path`: Path to a folder that you want to serve with LnMe (e.g. /home/bitcoin/lnme/website). Use this if you want to customize your ⚡website. default: disabled
+- `lnurlp-comment-allowed`: Allowed length of LNURL-pay comments, maximum around [~2000 characters](https://stackoverflow.com/a/417184). (default: 210)
 - `disable-website`: Disable the default LnMe website. Disable the website if you only want to embed the LnMe widget on your existing website.
 - `disable-cors`: Disable CORS headers. (default: false)
 - `disable-ln-address`: Disable [Lightning Address](https://lightningaddress.com/) handling.
 - `port`: Port to listen on. (default: 1323)
+- `listen`: IP and port to listen to. Supersedes `port`. (default: :1323).
 - `request-limit`: Limit the allowed requests per second. (default: 5)
 
 Depending on your deployment needs LnMe can be configured using the following options:
@@ -138,7 +141,41 @@ This buildpack can be disabled and removed if not needed or desired, through the
 
 Lastly, using the Heroku deployment, you can link the app to your own domain by following the directions here: https://help.heroku.com/MTG1BIA7/how-do-i-connect-a-domain-to-my-heroku-app
 
-### Deployment Notes
+
+### Fly.io
+
+#### 0. Clone the repo
+
+    $ git clone https://github.com/bumi/lnme.git
+    $ cd lnme
+
+#### 1. Create a new app
+
+    $ flyctl launch --generate-name  // or set a custom app name: flyctl launch --name lnme-test-1
+
+You will be asked a few things:
+
+* Copy the configuration to the new app
+* You do NOT need to create a Postgresql Database
+* Do NOT deploy it directly, we first need to set some configs
+
+#### 2. Set the configuration using environment variables:
+
+The LND config variablse are required. Others are optional:
+
+    $ flyctl secrets set LNME_LND_ADDRESS="xxx.xxx.xxx.xxx:10009" LNME_LND_CERT=xxx LNME_LND_MACAROON=xxx
+    $ flyctl secrets set DISABLE_WEBSITE=1 // etc.
+
+#### 3. Launch the app:
+
+    $ flyctl deploy
+
+#### 4.Configure your domain
+
+To configure a custom domain check the [fly.io guides](https://fly.io/docs/app-guides/custom-domains-with-fly/)
+
+
+### Custom deployment notes
 
 To run LnMe as systemd service have a look at the [systemd service example config](https://github.com/bumi/lnme/blob/master/examples/lnme.service)
 
@@ -171,7 +208,7 @@ if you got the Lightning Address enabled you also get a LNURL-pay URL:
 
 https://`{your domain}/lnurlp/{anything}`
 
-If you need an bech32 encoded version you can use this online tool: [https://lnurl.fiatjaf.com/codec/](https://lnurl.fiatjaf.com/codec/) 
+If you need an bech32 encoded version you can use this online tool: [https://lnurl.fiatjaf.com/codec/](https://lnurl.fiatjaf.com/codec/)
 
 ### Customize your ⚡ website
 
@@ -185,8 +222,8 @@ Take a look at the [embedded default website](https://github.com/bumi/lnme/blob/
 
 ### Usage with 21 Payment Widgets
 
-[widgets.twentyuno.net](https://widgets.twentyuno.net/) is a beautiful embeddable payment widget for any existing website.  
-You can use your LnMe instance with the widget by using your [LnMe LNURL](https://github.com/bumi/lnme#lnurl) with the widget. 
+[widgets.twentyuno.net](https://widgets.twentyuno.net/) is a beautiful embeddable payment widget for any existing website.
+You can use your LnMe instance with the widget by using your [LnMe LNURL](https://github.com/bumi/lnme#lnurl) with the widget.
 
 Use your bech32 encoded [LNURL](https://github.com/bumi/lnme#lnurl) as `Receiver` in the [widget configuration](https://widgets.twentyuno.net/get-started)
 
