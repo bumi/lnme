@@ -164,7 +164,16 @@ func main() {
 			lightningAddress := name + "@" + host
 			lnurlpMinSendable := msats(cfg.Int64("lnurlp-min-sendable"))
 			lnurlpMaxSendable := msats(cfg.Int64("lnurlp-max-sendable"))
-			lnurlMetadata := "[[\"text/identifier\", \"" + lightningAddress + "\"], [\"text/plain\", \"Sats for " + lightningAddress + "\"]]"
+			lnurlpThumbnailPath := cfg.String("lnurlp-thumbnail-dir") + "/" + name + ".png"
+			lnurlpThumbnailData, err := os.ReadFile(lnurlpThumbnailPath)
+			if lnurlpThumbnailPath != "" && err != nil {
+				stdOutLogger.Println("Error reading thumbnail:", err)
+			}
+			lnurlMetadata := lnurl.Metadata{}.
+				Identifier(lightningAddress).
+				Description("Sats for " + lightningAddress).
+				Thumbnail(lnurlpThumbnailData).
+				String()
 			lnurlpCommentAllowed := cfg.Int64("lnurlp-comment-allowed")
 
 			if amount := c.QueryParam("amount"); amount == "" {
@@ -251,6 +260,7 @@ func LoadConfig() *koanf.Koanf {
 	f.String("lnd-cert", "", "HEX string of LND tls cert file.")
 	f.Int64("lnurlp-min-sendable", 1, "Min sendable amount in sats via LNURL-pay.")
 	f.Int64("lnurlp-max-sendable", 1000000, "Max sendable amount in sats via LNURL-pay.")
+	f.String("lnurlp-thumbnail-dir", "", "Path to a PNG thumbnail directory for LNURL-pay metadata.")
 	f.Int64("lnurlp-comment-allowed", 210, "Allowed length of LNURL-pay comments.")
 	f.Bool("disable-website", false, "Disable default embedded website.")
 	f.Bool("disable-ln-address", false, "Disable Lightning Address handling")
