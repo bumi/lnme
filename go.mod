@@ -7,7 +7,7 @@ require (
 	github.com/cretz/bine v0.2.0
 	github.com/didip/tollbooth/v6 v6.1.2
 	github.com/knadh/koanf v1.4.1
-	github.com/labstack/echo/v4 v4.7.2
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/lightningnetwork/lnd v0.14.1-beta
 	google.golang.org/grpc v1.45.0
 	gopkg.in/macaroon.v2 v2.1.0
