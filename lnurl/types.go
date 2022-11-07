@@ -2,7 +2,12 @@
 // only using the LNURL types here
 package lnurl
 
-import "net/url"
+import (
+	"encoding/base64"
+	"encoding/json"
+	"net/http"
+	"net/url"
+)
 
 type LNURLResponse struct {
 	Status string `json:"status,omitempty"`
@@ -50,3 +55,28 @@ type LNURLErrorResponse struct {
 }
 
 type Metadata [][]string
+
+func (metadata Metadata) Identifier(identifier string) Metadata {
+	return append(metadata, []string{"text/identifier", identifier})
+}
+
+func (metadata Metadata) Description(description string) Metadata {
+	return append(metadata, []string{"text/plain", description})
+}
+
+func (metadata Metadata) Thumbnail(imageData []byte) Metadata {
+	if len(imageData) == 0 {
+		return metadata
+	}
+
+	mimeType := http.DetectContentType(imageData)
+	imageDataBase64 := base64.StdEncoding.EncodeToString(imageData)
+
+	return append(metadata, []string{mimeType + ";base64", imageDataBase64})
+}
+
+func (metadata Metadata) String() string {
+	bytes, _ := json.Marshal(metadata)
+
+	return string(bytes)
+}

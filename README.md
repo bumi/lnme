@@ -63,6 +63,9 @@ Instead of the path to the macaroon and cert files you can also provide the hex 
 #### Other configuration
 
 - `static-path`: Path to a folder that you want to serve with LnMe (e.g. /home/bitcoin/lnme/website). Use this if you want to customize your ⚡website. default: disabled
+- `lnurlp-min-sendable`: Min sendable amount in sats via LNURL-pay. (default: 1)
+- `lnurlp-max-sendable`: Max sendable amount in sats via LNURL-pay. (default: 1000000)
+- `lnurlp-thumbnail-dir`: Path to a PNG thumbnail directory for LNURL-pay metadata. 
 - `lnurlp-comment-allowed`: Allowed length of LNURL-pay comments, maximum around [~2000 characters](https://stackoverflow.com/a/417184). (default: 210)
 - `disable-website`: Disable the default LnMe website. Disable the website if you only want to embed the LnMe widget on your existing website.
 - `disable-cors`: Disable CORS headers. (default: false)
