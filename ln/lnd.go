@@ -47,7 +47,7 @@ type LNDclient struct {
 }
 
 // AddInvoice generates an invoice with the given price and memo.
-func (c LNDclient) AddInvoice(value int64, memo string, descriptionHash []byte) (Invoice, error) {
+func (c LNDclient) AddInvoice(value int64, memo string, descriptionHash []byte, private bool) (Invoice, error) {
 	result := Invoice{}
 
 	stdOutLogger.Printf("Adding invoice: memo=%s value=%v", memo, value)
@@ -55,6 +55,7 @@ func (c LNDclient) AddInvoice(value int64, memo string, descriptionHash []byte) 
 		Memo:            memo,
 		DescriptionHash: descriptionHash,
 		Value:           value,
+		Private:         private,
 	}
 	res, err := c.lndClient.AddInvoice(c.ctx, &invoice)
 	if err != nil {

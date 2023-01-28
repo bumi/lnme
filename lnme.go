@@ -117,7 +117,7 @@ func main() {
 			return c.JSON(http.StatusBadRequest, "Bad request")
 		}
 
-		invoice, err := lnClient.AddInvoice(i.Value, i.Memo, nil)
+		invoice, err := lnClient.AddInvoice(i.Value, i.Memo, nil, cfg.Bool("enable-private-channels"))
 		if err != nil {
 			stdOutLogger.Printf("Error creating invoice: %s", err)
 			return c.JSON(http.StatusInternalServerError, "Error adding invoice")
@@ -190,7 +190,7 @@ func main() {
 					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Invalid comment length"})
 				}
 				metadataHash := sha256.Sum256([]byte(lnurlMetadata))
-				invoice, err := lnClient.AddInvoice(sats, comment, metadataHash[:])
+				invoice, err := lnClient.AddInvoice(sats, comment, metadataHash[:], cfg.Bool("enable-private-channels"))
 				if err != nil {
 					stdOutLogger.Printf("Error creating invoice: %s", err)
 					return c.JSON(http.StatusOK, lnurl.LNURLErrorResponse{Status: "ERROR", Reason: "Server Error"})
@@ -248,6 +248,7 @@ func LoadConfig() *koanf.Koanf {
 	f.Bool("disable-website", false, "Disable default embedded website.")
 	f.Bool("disable-ln-address", false, "Disable Lightning Address handling")
 	f.Bool("disable-cors", false, "Disable CORS headers.")
+	f.Bool("enable-private-channels", false, "Adds private routing hints to invoices")
 	f.Float64("request-limit", 5, "Request limit per second.")
 	f.String("static-path", "", "Path to a static assets directory.")
 	f.String("port", "", "Port to bind on (deprecated - use listen).")
