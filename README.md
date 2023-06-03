@@ -124,6 +124,7 @@ The TLS cert is located in the lnd directory:
 
 - ~/umbrel/lnd/tls.cert on Umbrel
 - /mnt/hdd/lnd/tls.cert on Raspiblitz
+- /embassy-data/package-data/volumes/lnd/data/main/tls.cert on Start9 Embassy
 - Can also be located in ~/.lnd
 
 You should find the macaroon files in the LND data dir (e.g. ~.lnd/data/chain/bitcoin/mainnet/) or see "LND Permissions" how to create a new one.
