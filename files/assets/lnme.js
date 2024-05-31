@@ -120,15 +120,11 @@ class LnMe {
   }
 
   payWithWebln() {
-    if (!webln.isEnabled) {
-      webln.enable().then((weblnResponse) => {
-        return webln.sendPayment(this.invoice.payment_request);
-      }).catch((e) => {
-        return this.showPaymentRequest();
-      })
-    } else {
+    webln.enable().then((weblnResponse) => {
       return webln.sendPayment(this.invoice.payment_request);
-    }
+    }).catch((e) => {
+      return this.showPaymentRequest();
+    })
   }
 
   populatePaymentRequest() {
